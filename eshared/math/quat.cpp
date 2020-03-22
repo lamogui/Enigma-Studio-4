@@ -385,6 +385,11 @@ eQuat eQuat::slerp(eF32 t, const eQuat &to) const
 
 }
 
+eQuat eQuat::nlerp(eF32 t, const eQuat &to) const
+{
+	return lerp(t, to).normalized();
+}
+
 eQuat eQuat::log() const
 {
     const eF32 theta = eACos(w);

@@ -48,6 +48,7 @@ public:
     eQuat           exp() const;
     eQuat           lerp(eF32 t, const eQuat &to) const;
     eQuat           slerp(eF32 t, const eQuat &to) const;
+		eQuat           nlerp(eF32 t, const eQuat &to) const;
 
     eQuat           operator + (const eQuat &q) const;
     eQuat           operator - (const eQuat &q) const;
