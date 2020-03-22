@@ -15,6 +15,7 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
+#ifndef eRELEASE
 class eTimer
 {
 public:
@@ -42,5 +43,5 @@ private:
     eU32            m_histIndex;
     eU32            m_histCount;
 };
-
+#endif // !eRELEASE
 #endif // TIMER_HPP

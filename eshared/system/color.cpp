@@ -25,6 +25,7 @@ eColor::eColor(eU8 nr, eU8 ng, eU8 nb, eU8 na) : r(nr), g(ng), b(nb), a(na)
 {
 }
 
+#ifndef eRELEASE
 eColor::eColor(eColorConst cc)
 {
     static const eColor colors[] =
@@ -46,6 +47,7 @@ eColor::eColor(eColorConst cc)
 
     *this = colors[cc];
 }
+#endif // !eRELEASE
 
 void eColor::set(eU8 nr, eU8 ng, eU8 nb)
 {

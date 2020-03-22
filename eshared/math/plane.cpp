@@ -16,7 +16,7 @@
 #include "math.hpp"
 
 ePlane::ePlane() :
-    m_normal(eVEC3_YAXIS),
+    m_normal(0.0f, 1.0f, 0.0f),
     m_absNormal(m_normal),
     m_d(0.0f)
 {

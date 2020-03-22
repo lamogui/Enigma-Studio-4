@@ -15,6 +15,7 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
+#ifndef eRELEASE
 enum eColorConst
 {
     eCOL_RED,
@@ -31,6 +32,7 @@ enum eColorConst
     eCOL_DARKGRAY,
     eCOL_LIGHTGRAY,
  };
+#endif //eRELEASE
 
 // 8-bit per channel integer color
 class eColor
@@ -38,7 +40,9 @@ class eColor
 public:
     eColor();
     eColor(eU8 nr, eU8 ng, eU8 nb, eU8 na=255);
+#ifndef eRELEASE
     eColor(eColorConst cc);
+#endif 
 
     void        set(eU8 nr, eU8 ng, eU8 nb);
     void        set(eU8 nr, eU8 ng, eU8 nb, eU8 na);

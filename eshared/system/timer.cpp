@@ -12,6 +12,8 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#ifndef eRELEASE
+
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
@@ -89,3 +91,5 @@ void eTimer::_initialize()
         m_inited = eTRUE;
     }
 }
+
+#endif // !eRELEASE
