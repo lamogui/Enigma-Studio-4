@@ -31,10 +31,20 @@ ePtr eCDECL operator new [] (eU32 size)
 
 void eCDECL operator delete(ePtr ptr)
 {
+	HeapFree(GetProcessHeap(), 0, ptr);
+}
+
+void eCDECL operator delete(ePtr ptr, unsigned int)
+{
     HeapFree(GetProcessHeap(), 0, ptr);
 }
 
-void eCDECL operator delete [] (ePtr ptr)
+void eCDECL operator delete [](ePtr ptr)
+{
+	HeapFree(GetProcessHeap(), 0, ptr);
+}
+
+void eCDECL operator delete [] (ePtr ptr, unsigned int)
 {
     HeapFree(GetProcessHeap(), 0, ptr);
 }
@@ -803,9 +813,9 @@ eF32 eExp(eF32 x)
 }
 
 // rounds down towards -inf (e.g. floor(-2.2) = -3)
-eInt eFloor(eF32 x)
+eS32 eFloor(eF32 x)
 {
-    eInt holder, setter, res;
+		eS32 holder, setter, res;
 
     __asm
     {
@@ -824,7 +834,7 @@ eInt eFloor(eF32 x)
 }
 
 // rounds up towards +inf (e.g. ceil(-2.2) = -2)
-eInt eCeil(eF32 x)
+eS32 eCeil(eF32 x)
 {
     eInt holder, setter, res;
 

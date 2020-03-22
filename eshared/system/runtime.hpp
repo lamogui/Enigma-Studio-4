@@ -197,6 +197,18 @@ eFORCEINLINE eF32 eAbs(eF32 x)
     return x;
 }
 
+eFORCEINLINE eF64 eAbs(eF64 x)
+{
+	__asm
+	{
+		fld     qword ptr[x]
+		fabs
+		fstp    qword ptr[x]
+	}
+
+	return x;
+}
+
 eFORCEINLINE eU32 eAbs(eInt x)
 {
     return ((x^(x>>31))-(x>>31));
