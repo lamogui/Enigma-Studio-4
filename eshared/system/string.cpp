@@ -103,7 +103,7 @@ eString eString::subStr(eU32 startIndex, eU32 endIndex) const
     eASSERT((eInt)endIndex < (eInt)m_data.size()-1);
     eASSERT(startIndex <= endIndex);
 
-    const eChar *str = (*this);
+    const eChar *str = c_str();
 
     return eString(str+startIndex, endIndex-startIndex);
 }
@@ -190,11 +190,6 @@ eString & eString::operator = (const eChar *str)
     return *this;
 }
 
-eString::operator const eChar * () const
-{
-    return &m_data[0];
-}
-
 const eChar & eString::at(eU32 index) const
 {
     eASSERT(index < m_data.size()-1);
@@ -221,7 +216,7 @@ eChar & eString::operator [] (eInt index)
 
 eBool eString::operator == (const eString &str) const
 {
-    return (eStrCompare(*this, str) == 0);
+    return (eStrCompare(c_str(), str.c_str()) == 0);
 }
 
 eBool eString::operator == (const eChar *str) const
@@ -237,4 +232,9 @@ eBool eString::operator != (const eString &str) const
 eBool eString::operator != (const eChar *str) const
 {
     return !(*this == str);
+}
+
+const eChar * eString::c_str() const
+{
+	return &m_data[ 0 ];
 }

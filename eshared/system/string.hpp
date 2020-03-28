@@ -77,7 +77,7 @@ public:
     eBool           operator != (const eString &str) const;
     eBool           operator != (const eChar *str) const;
 
-    operator const eChar * () const;
+	const eChar *	c_str() const;
 
 private:
     eArray<eChar>   m_data;
