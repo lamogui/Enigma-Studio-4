@@ -15,6 +15,7 @@
 #ifndef RUNTIME_HPP
 #define RUNTIME_HPP
 
+#include "sys_builddefines.h"
 // global constants (don't change into
 // constants, it's a size thing!)
 
@@ -49,7 +50,7 @@
 // overloaded new and delete operators. WinAPI
 // versions for release build and memory tracking
 // versions for debug build.
-#if defined(eRELEASE) && defined(ePLAYER)
+#if 1 //defined(eRELEASE) && defined(ePLAYER)
     ePtr eCDECL operator new(eU32 size);
     ePtr eCDECL operator new [] (eU32 size);
     void eCDECL operator delete(ePtr ptr);
@@ -172,6 +173,16 @@ eU8     eLobyte(eU16 x);
 eU8     eHibyte(eU16 x);
 eU32    eMakeDword(eU16 lo, eU16 hi);
 eU16    eMakeWord(eU8 lo, eU8 hi);
+
+#ifdef PROUT_IMGUI
+eF64	eAToF( const eChar * _str );
+eInt	eMemCompare( const void * _s1, const void * _s2, eInt _n );
+void *	eMemChr( register const void * _src_void, int _c, size_t _length );
+eChar	eToUpper( eChar _c );
+eChar * eStrStr( const eChar * s1, const eChar * s2 );
+eBool	eIsSpace( eChar c );
+
+#endif // PROUT_IMGUI
 
 #define eLoword(x)          (eU16)(x&0xffff)
 #define eHiword(x)          (eU16)((x>>16)&0xffff)

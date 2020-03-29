@@ -18,7 +18,7 @@
 #include "types.hpp"
 #include "runtime.hpp"
 
-#if defined(eRELEASE) && defined(ePLAYER)
+#if 1 //defined(eRELEASE) && defined(ePLAYER)
 ePtr eCDECL operator new(eU32 size)
 {
     return HeapAlloc(GetProcessHeap(), 0, size);
@@ -167,6 +167,7 @@ void eWriteToLog(const eChar *msg)
     OutputDebugString("\n");
 }
 
+/*
 #ifndef ePLAYER
 eU64 eGetAllocatedMemory()
 {
@@ -182,6 +183,7 @@ eU64  eGetTotalVirtualMemory()
     return mse.ullTotalVirtual;
 }
 #endif
+*/
 
 void eLeakDetectorStart()
 {
@@ -1179,3 +1181,124 @@ eBool eClosedIntervalsOverlap(eInt start0, eInt end0, eInt start1, eInt end1)
     return (start1 <= end0 && start0 <= end1);
 }
 
+#ifdef PROUT_IMGUI
+eF64 eAToF( const eChar * _str )
+{
+	bool neg = false;
+	if ( *_str == '-' ) {
+		neg = true;
+		++_str;
+	} else if ( *_str == '+' ) {
+		++_str;
+	}
+
+	double value = 0;
+	for ( ; *_str != '.'; ++_str ) {
+		if ( !*_str ) {
+			return neg ? -value : value;
+		}
+		value *= 10;
+		value += *_str - '0';
+	}
+
+	double decimal = 0, weight = 1;
+	for ( ; *++_str; weight *= 10 ) {
+		decimal *= 10;
+		decimal += *_str - '0';
+	}
+	decimal /= weight;
+	return neg ? -(value + decimal) : (value + decimal);
+}
+
+eInt eMemCompare( const void * _s1, const void * _s2, eInt _n )
+{
+	register const unsigned char *s1 = ( const unsigned char* )_s1;
+	register const unsigned char *s2 = ( const unsigned char* )_s2;
+
+	while ( _n-- > 0 )
+	{
+		if ( *s1++ != *s2++ )
+			return s1[ -1 ] < s2[ -1 ] ? -1 : 1;
+	}
+	return 0;
+}
+
+void * eMemChr( register const void * _src_void, int _c, size_t _length )
+{
+	const unsigned char *src = ( const unsigned char * )_src_void;
+
+	while ( _length-- > 0 )
+	{
+		if ( *src == _c )
+			return ( void * )src;
+		src++;
+	}
+	return nullptr;
+}
+
+eChar eToUpper( eChar _c )
+{
+	if ( _c >= 'a' && _c <= 'z' ) {
+		_c -= 32;
+	}
+	return _c;
+}
+
+static eChar * eStrChr( const eChar * _s, eInt _c )
+{
+	while ( _s[ 0 ] != _c && _s[ 0 ] != '\0' ) {
+		_s++;
+	}
+	if ( _s[ 0 ] == '\0' ) {
+		return nullptr;
+	}
+	else {
+		return ( eChar * )_s;
+	}
+}
+
+static int eStrNCompare( const eChar * _s1, const eChar * _s2, register size_t _n )
+{
+	register unsigned char u1, u2;
+
+	while ( _n-- > 0 )
+	{
+		u1 = ( unsigned char )*_s1++;
+		u2 = ( unsigned char )*_s2++;
+		if ( u1 != u2 )
+			return u1 - u2;
+		if ( u1 == '\0' )
+			return 0;
+	}
+	return 0;
+}
+
+eChar * eStrStr( const eChar * _s1, const eChar * _s2 )
+{
+	const char *p = _s1;
+	const size_t len = eStrLength( _s2 );
+
+	for ( ; (p = eStrChr( p, *_s2 )) != 0; p++ )
+	{
+		if ( eStrNCompare( p, _s2, len ) == 0 ) {
+			return ( char * )p;
+		}
+	}
+	return (0);
+}
+
+eBool eIsSpace( eChar _c ) {
+	switch ( _c ){
+		case '\t':
+		case '\n':
+		case '\v':
+		case '\f':
+		case '\r':
+			return true;
+		default:
+			return false;
+	}
+	
+}
+
+#endif // PROUT_IMGUI
