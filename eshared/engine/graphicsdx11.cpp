@@ -16,11 +16,13 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
-#include "../eshared.hpp"
+#include "extern/Enigma/eshared/engine/graphics.hpp"
+#include "extern/Enigma/eshared/engine/graphicsdx11.hpp"
+#include "extern/Enigma/eshared/system/array.hpp"
 
 static void eCallDx(const HRESULT res)
 {
-    eASSERT(!FAILED(res));
+    passert( !FAILED(res), "DirectX call failed" );
 
     if (FAILED(res))
         eShowError(eIntToStr(res));
@@ -323,7 +325,7 @@ void eGraphicsDx11::openWindow(eU32 width, eU32 height, eInt windowFlags, ePtr h
 
 void eGraphicsDx11::setWindowTitle(const eString &title)
 {
-    SetWindowText((HWND)m_hwnd, title);
+    SetWindowTextA((HWND)m_hwnd, title.c_str());
 }
 
 void eGraphicsDx11::handleMessages(eMessage &msg)
@@ -2047,7 +2049,7 @@ void eGraphicsDx11::_compileShader(const eChar *src, const eChar *define, const 
             eShowError((eChar *)errMsg->GetBufferPointer());
 		}
         else
-            eShowError(eString("Couldn't load shader \"")+src+"\"!");
+            eShowError((eString("Couldn't load shader \"")+src+"\"!").c_str());
 
 
 #ifdef eDEBUG

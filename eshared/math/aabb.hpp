@@ -12,8 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef AABB_HPP
-#define AABB_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/math/vector.hpp"
+#include "extern/Enigma/eshared/math/transform.hpp"
 
 enum eCollision
 {
@@ -55,5 +57,3 @@ private:
     eVector3            m_center;
     eVector3            m_size;
 };
-
-#endif // AABB_HPP

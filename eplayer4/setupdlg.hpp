@@ -12,8 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef SETUP_DLG_HPP
-#define SETUP_DLG_HPP
+#pragma once
+#include "sys_builddefines.h"
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/point.hpp"
 
 struct eSetup
 {
@@ -31,6 +33,4 @@ struct eSetup
 
 // returns false, if config dialog was canceled,
 // otherwise true is returned (=> start demo)
-eBool eShowSetupDialog(eSetup &setup, const eEngine &engine);
-
-#endif // SETUP_DLG_HPP
+eBool eShowSetupDialog(eSetup &setup);

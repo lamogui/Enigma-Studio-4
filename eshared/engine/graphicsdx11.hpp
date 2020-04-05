@@ -12,8 +12,12 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef GRAPHICS_DX11_HPP
-#define GRAPHICS_DX11_HPP
+#pragma once
+#include "sys_builddefines.h"
+#include "renderbase/renderbase_defines.h"
+#include "extern/Enigma/eshared/system/types.hpp"
+
+#ifdef PROUT_D3D11
 
 struct ID3D11Device;
 struct ID3D11Buffer;
@@ -462,4 +466,4 @@ public:
 #define eRenderState            eRenderStateDx11
 #define eUavBuffer              eUavBufferDx11
 
-#endif // GRAPHICS_DX11_HPP
+#endif // PROUT_D3D11

@@ -12,8 +12,9 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef SIMD_HPP
-#define SIMD_HPP
+#pragma once
+
+#include "extern/Enigma/eshared/system/types.hpp"
 
 #include <xmmintrin.h>
 #include <emmintrin.h>
@@ -89,5 +90,3 @@ enum eSimdArithmeticFlags
 };
 
 void eSimdSetArithmeticFlags(eInt flags);
-
-#endif

@@ -12,11 +12,15 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
+#include "extern/Enigma/eshared/system/threading.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp" // for eDelete
+#include "system/sys_assert.hpp"
 
-#include "system.hpp"
+#ifdef PROUT_WIN32
+#include "platforms/win32/sys_win32.h"
+#endif // PROUT_WIN32
+
+
 
 eThread::eThread(eInt flags, eThreadFunc threadFunc) :
     m_prio((eThreadPriority)(flags&(~eTHCF_SUSPENDED))),
@@ -24,7 +28,7 @@ eThread::eThread(eInt flags, eThreadFunc threadFunc) :
 {
     const eU32 tf = (flags&eTHCF_SUSPENDED ? CREATE_SUSPENDED : 0);
     m_handle = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)_threadTrunk, this, tf, (LPDWORD)&m_tid);
-    eASSERT(m_handle);
+    passert( m_handle != 0, "Call to CreateThread failed !");
 
 #ifdef eEDITOR
     m_ctx.thread = this;
@@ -125,7 +129,7 @@ const eThreadCtx & eThread::getContext() const
 
 eU32 eThread::operator () ()
 {
-    eASSERT(m_threadFunc);
+    passert( m_threadFunc!= nullptr, "missing m_threadFunc" );
     return m_threadFunc(this);
 }
 
@@ -148,7 +152,7 @@ eMutex::eMutex() :
 
 eMutex::~eMutex()
 {
-    eASSERT(!m_locked);
+    passert(!m_locked, "Mutex locked at destruction !");
     CRITICAL_SECTION *cs = (CRITICAL_SECTION *)m_handle;
     DeleteCriticalSection(cs);
     eDelete(cs);
@@ -157,7 +161,7 @@ eMutex::~eMutex()
 void eMutex::enter()
 {
     EnterCriticalSection((CRITICAL_SECTION *)m_handle);
-    eASSERT(!m_locked);
+    passert(!m_locked, "Mutex double lock !" );
     m_locked = eTRUE;
 }
 
@@ -169,7 +173,7 @@ void eMutex::tryEnter()
 
 void eMutex::leave()
 {
-    eASSERT(m_locked);
+    passert(m_locked, "Unlock a not loacked mutex !");
     m_locked = eFALSE;
     LeaveCriticalSection((CRITICAL_SECTION *)m_handle);
 }

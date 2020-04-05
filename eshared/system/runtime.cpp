@@ -12,11 +12,11 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#ifdef PROUT_WIN32
+#include "platforms/win32/sys_win32.h"
+#endif // PROUT_WIN32
 
-#include "types.hpp"
-#include "runtime.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
 
 #if 1 //defined(eRELEASE) && defined(ePLAYER)
 ePtr eCDECL operator new(eU32 size)

@@ -12,10 +12,11 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "system.hpp"
-#include "color.hpp"
 
-#include "../math/math.hpp"
+#include "extern/Enigma/eshared/system/color.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
+
+#include "system/sys_assert.hpp"
 
 eColor::eColor() : r(0), g(0), b(0), a(255)
 {
@@ -25,7 +26,7 @@ eColor::eColor(eU8 nr, eU8 ng, eU8 nb, eU8 na) : r(nr), g(ng), b(nb), a(na)
 {
 }
 
-#ifndef eRELEASE
+#ifdef PROUT_ENABLE_TLS
 eColor::eColor(eColorConst cc)
 {
     static const eColor colors[] =
@@ -47,7 +48,7 @@ eColor::eColor(eColorConst cc)
 
     *this = colors[cc];
 }
-#endif // !eRELEASE
+#endif // PROUT_ENABLE_TLS
 
 void eColor::set(eU8 nr, eU8 ng, eU8 nb)
 {
@@ -101,7 +102,7 @@ eColor eColor::operator - (const eColor &c) const
 
 eColor eColor::operator * (eF32 s) const
 {
-    eASSERT(s >= 0.0f);
+    passert(s >= 0.0f, "Invalid color multiplier");
 
     return eColor(eMin(eFtoL((eF32)r*s), 255),
                     eMin(eFtoL((eF32)g*s), 255),
@@ -162,7 +163,7 @@ void eColor::difference(const eColor &c)
 // linear interpolation (0 <= t <= 1)
 eColor eColor::lerp(const eColor &to, eF32 t) const
 {
-    eASSERT(t >= 0.0f && t <= 1.0f);
+    passert(t >= 0.0f && t <= 1.0f, "Invalid value for interpolation");
 
     return eColor(eFtoL(eLerp((eF32)r, (eF32)to.r, t)),
                     eFtoL(eLerp((eF32)g, (eF32)to.g, t)),
@@ -181,13 +182,13 @@ eU32 eColor::toArgb() const // a MSB, b LSB
 
 const eU8 & eColor::operator [] (eInt index) const
 {
-    eASSERT(index < 4);
+    passert(index < 4, "Invalid index");
     return ((eU8 *)this)[index];
 }
 
 eU8 & eColor::operator [] (eInt index)
 {
-    eASSERT(index < 4);
+		passert(index < 4, "Invalid index");
     return ((eU8 *)this)[index];
 }
 

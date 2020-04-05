@@ -12,8 +12,12 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef TRANSFORM_HPP
-#define TRANSFORM_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/math/matrix.hpp"
+
+class eVector3;
+class eQuat;
 
 // order of transformations:
 // [s]cale, [r]otate, [t]ranslate
@@ -48,5 +52,3 @@ private:
     eBool               m_identity;
     eBool               m_uniformScale;
 };
-
-#endif // TRANSFORM_HPP

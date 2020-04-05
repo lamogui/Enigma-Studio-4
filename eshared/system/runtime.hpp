@@ -12,10 +12,8 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef RUNTIME_HPP
-#define RUNTIME_HPP
-
-#include "sys_builddefines.h"
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
 // global constants (don't change into
 // constants, it's a size thing!)
 
@@ -382,5 +380,3 @@ template<class T> eINLINE eBool eInRange(const T &x, const T &min, const T &max)
 {
     return (x >= min && x <= max);
 }
-
-#endif // RUNTIME_HPP

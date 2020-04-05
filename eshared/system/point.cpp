@@ -12,7 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "system.hpp"
+#include "extern/Enigma/eshared/system/point.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
+
+#include "system/sys_assert.hpp"
 
 ePoint::ePoint()
 {
@@ -91,13 +94,13 @@ ePoint & ePoint::operator *= (eF32 s)
 
 eInt ePoint::operator [] (eInt index) const
 {
-    eASSERT(index < 2);
+    passert(index < 2, "Invalid index");
     return ((eInt *)this)[index];
 }
 
 eInt & ePoint::operator [] (eInt index)
 {
-    eASSERT(index < 2);
+		passert(index < 2, "Inavlid index");
     return ((eInt *)this)[index];
 }
 

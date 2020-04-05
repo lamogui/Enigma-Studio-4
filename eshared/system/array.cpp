@@ -12,11 +12,14 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "system.hpp"
+#include "extern/Enigma/eshared/system/array.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
+
+#include "system/sys_assert.hpp"
 
 void eArrayInit(ePtrArray *a, eU32 typeSize, eU32 size)
 {
-    eASSERT(typeSize > 0);
+    passert(typeSize > 0, "Invalid typeSize");
 
     a->m_data = nullptr;
     a->m_size = 0;
@@ -57,7 +60,7 @@ void eArrayReserve(ePtrArray *a, eU32 capacity)
     else if (a->m_capacity < capacity)
     {
         eU8 *temp = (eU8 *)eAllocAlignedAndZero(capacity*a->m_typeSize, 16);
-        eASSERT(temp != nullptr);
+        passert(temp != nullptr, "Failed to allocate memory for eArray");
         eU32 newSize = 0;
 
         if (a->m_data)
@@ -97,7 +100,7 @@ ePtr eArrayAppend(ePtrArray *a)
 
 void eArrayInsert(ePtrArray *a, eU32 index, const ePtr data)
 {
-    eASSERT(index <= a->m_size);
+    passert(index <= a->m_size, "Invalid index");
 
     if (a->m_size >= a->m_capacity)
     {
@@ -115,7 +118,7 @@ void eArrayInsert(ePtrArray *a, eU32 index, const ePtr data)
 
 void eArrayRemoveAt(ePtrArray *a, eU32 index)
 {
-    eASSERT(index < a->m_size);
+    passert(index < a->m_size, "Invalid index");
 
     eMemMove(((eU8 *)a->m_data)+index*a->m_typeSize,
              ((eU8 *)a->m_data)+(index+1)*a->m_typeSize,
@@ -126,7 +129,7 @@ void eArrayRemoveAt(ePtrArray *a, eU32 index)
 
 void eArrayRemoveSwap(ePtrArray *a, eU32 index)
 {
-    eASSERT(index < a->m_size);
+    passert(index < a->m_size, "Invalid index" );
 
     if (index < a->m_size-1)
     {

@@ -12,8 +12,9 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef RECT_HPP
-#define RECT_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/point.hpp"
 
 class eIXYXY
 {
@@ -68,5 +69,3 @@ public:
     eBool   operator == (const eRect &r) const;
     eBool   operator != (const eRect &r) const;
 };
-
-#endif // RECT_HPP

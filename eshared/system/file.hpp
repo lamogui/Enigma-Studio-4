@@ -12,10 +12,14 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef FILE_HPP
-#define FILE_HPP
+#pragma once
+#include "sys_builddefines.h"
 
-#ifndef ePLAYER
+// Let's wait a need for this
+#if 0 // PROUT_FILE_API
+
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/array.hpp"
 
 enum eFileSeekMode
 {
@@ -58,6 +62,4 @@ private:
     eU32                m_pos;
 };
 
-#endif
-
-#endif // FILE_HPP
+#endif // PROUT_FILE_API

@@ -12,7 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "system.hpp"
+#include "extern/Enigma/eshared/system/datastream.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
+
+#include "system/sys_assert.hpp"
 
 eDataStream::eDataStream(eConstPtr mem, eU32 length) :
     m_reading(eFALSE),
@@ -51,7 +54,7 @@ void eDataStream::advance(eU32 offset)
 
 void eDataStream::writeBit(eBool bit, eU32 count)
 {
-    eASSERT(!m_reading);
+    passert(!m_reading, "Attempt to write in a reading datastream");
 
     for (eU32 i=0; i<count; i++)
     {
@@ -106,7 +109,7 @@ void eDataStream::writeBits(eU32 dword, eU32 bitCount)
 // writes elias gamma encoded integer
 void eDataStream::writeVbr(eU32 dword)
 {
-    eASSERT(dword < eU32_MAX);
+    passert(dword < eU32_MAX, "32Bit limitation reached");
     dword++; // 0 is not encodable
     const eInt bitCount = eFtoL(eLog2((eF32)dword))+1; // truncation crucial
 
@@ -119,8 +122,8 @@ void eDataStream::writeVbr(eU32 dword)
 
 eBool eDataStream::readBit()
 {
-    eASSERT(m_reading);
-    eASSERT(m_readIndex <= m_data.size());
+    passert(m_reading,"Attempt to read a write stream");
+		passert(m_readIndex <= m_data.size(), "Invalid index");
 
     if (m_bitCount == 8)
     {

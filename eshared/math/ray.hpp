@@ -12,9 +12,11 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef RAY_HPP
-#define RAY_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/math/vector.hpp"
 
+class ePlane;
 class eRay
 {
 public:
@@ -33,5 +35,3 @@ private:
     eVector3            m_origin;
     eVector3            m_dir;
 };
-
-#endif // RAY_HPP

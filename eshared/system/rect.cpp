@@ -12,7 +12,8 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "system.hpp"
+#include "extern/Enigma/eshared/system/rect.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp" // for eASSERT & eSwap
 
 eRect::eRect()
 {

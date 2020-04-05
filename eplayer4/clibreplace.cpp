@@ -12,7 +12,8 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "../eshared/system/system.hpp"
+#include "extern/Enigma/eplayer4/clibreplace.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
 
 #if defined(eRELEASE)
 // call ctors and dtors of static and global variables

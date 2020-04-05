@@ -12,8 +12,8 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef POINT_HPP
-#define POINT_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
 
 struct eIXYZ
 {
@@ -73,5 +73,3 @@ public:
 };
 
 typedef ePoint eSize;
-
-#endif // POINT_HPP

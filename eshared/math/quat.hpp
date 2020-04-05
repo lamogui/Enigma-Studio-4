@@ -12,8 +12,13 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef QUAT_HPP
-#define QUAT_HPP
+#pragma once
+
+#include "extern/Enigma/eshared/system/types.hpp"
+
+class eVector3;
+class eMatrix4x4;
+class eQuat;
 
 class eQuat
 {
@@ -73,5 +78,3 @@ public:
     eF32            z;
     eF32            w;
 };
-
-#endif // QUAT_HPP

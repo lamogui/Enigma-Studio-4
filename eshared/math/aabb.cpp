@@ -12,8 +12,9 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "../system/system.hpp"
-#include "math.hpp"
+#include "extern/Enigma/eshared/math/aabb.hpp"
+#include "extern/Enigma/eshared/math/matrix.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
 
 eAABB::eAABB()
 {

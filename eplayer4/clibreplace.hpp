@@ -12,10 +12,7 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef CLIB_REPLACEMENT_HPP
-#define CLIB_REPLACEMENT_HPP
-
+#pragma once
+#include "sys_builddefines.h"
 void eGlobalsStaticsInit();
 void eGlobalsStaticsFree();
-
-#endif // CLIB_REPLACEMENT_HPP

@@ -12,8 +12,9 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef THREADING_HPP
-#define THREADING_HPP
+#pragma once
+
+#include "extern/Enigma/eshared/system/types.hpp"
 
 class eProfilerThread;
 
@@ -118,5 +119,3 @@ public:
 private:
     eMutex & m_mutex;
 };
-
-#endif // THREADING_HPP

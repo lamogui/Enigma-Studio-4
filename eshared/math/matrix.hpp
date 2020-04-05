@@ -11,9 +11,8 @@
  *   Copyright © 2003-2012 Brain Control, all rights reserved.
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-#ifndef MATRIX_HPP
-#define MATRIX_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
 
 class eQuat;
 class eVector3;
@@ -141,5 +140,3 @@ public:
         eF32            mm[4][4];
     };
 };
-
-#endif // MATRIX_HPP

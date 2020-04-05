@@ -12,7 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "system.hpp"
+#include "extern/Enigma/eshared/system/string.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
+
+#include "system/sys_assert.hpp"
 
 eString::eString()
 {
@@ -32,8 +35,8 @@ eString::eString(const eChar *str)
 
 eString::eString(const eChar *str, eU32 length)
 {
-    eASSERT(length > 0);
-    eASSERT(eStrLength(str) >= length);
+    passert(length > 0, "Invalid String initialisation");
+		passert(eStrLength(str) >= length, "Invalid String initialisation");
 
     m_data.resize(length+1);
     eMemCopy(&m_data[0], str, length);
@@ -51,7 +54,7 @@ eU32 eString::length() const
 
 eBool eString::equals(const eString &str, eU32 count) const
 {
-    eASSERT(count <= str.length());
+		passert(count <= str.length(), "You should check size before...");
 
     for (eU32 i=0; i<eMin(count, length()); i++)
         if (str[i] != m_data[i])
@@ -99,9 +102,9 @@ eBool eString::split(eChar token, eString &left, eString &right) const
 
 eString eString::subStr(eU32 startIndex, eU32 endIndex) const
 {
-    eASSERT((eInt)startIndex < (eInt)m_data.size()-1);
-    eASSERT((eInt)endIndex < (eInt)m_data.size()-1);
-    eASSERT(startIndex <= endIndex);
+    passert((eInt)startIndex < (eInt)m_data.size()-1,"Invalid startIndex");
+		passert((eInt)endIndex < (eInt)m_data.size()-1, "Invalid endIndex");
+		passert(startIndex <= endIndex, "Invalid indexes");
 
     const eChar *str = c_str();
 
@@ -136,9 +139,9 @@ eString eString::simplified() const
 // at the given indices.
 void eString::remove(eU32 startIndex, eU32 endIndex)
 {
-    eASSERT((eInt)startIndex < (eInt)m_data.size()-1);
-    eASSERT((eInt)endIndex < (eInt)m_data.size()-1);
-    eASSERT(startIndex <= endIndex);
+		passert((eInt)startIndex < (eInt)m_data.size() - 1, "Invalid startIndex");
+		passert((eInt)endIndex < (eInt)m_data.size() - 1, "Invalid endIndex");
+		passert(startIndex <= endIndex, "Invalid indexes");
 
     for (eU32 i=endIndex; i>=startIndex; i--)
         m_data.removeAt(i);
@@ -146,7 +149,7 @@ void eString::remove(eU32 startIndex, eU32 endIndex)
 
 void eString::removeAt(eU32 index)
 {
-    eASSERT((eInt)index < (eInt)m_data.size()-1);
+		passert((eInt)index < (eInt)m_data.size()-1, "Invalid index");
     remove(index, index);
 }
 
@@ -192,25 +195,25 @@ eString & eString::operator = (const eChar *str)
 
 const eChar & eString::at(eU32 index) const
 {
-    eASSERT(index < m_data.size()-1);
+		passert((eInt)index < (eInt)m_data.size() - 1, "Invalid index");
     return m_data[index];
 }
 
 eChar & eString::at(eU32 index)
 {
-    eASSERT(index < m_data.size()-1);
+		passert((eInt)index < (eInt)m_data.size() - 1, "Invalid index");
     return m_data[index];
 }
 
 const eChar & eString::operator [] (eInt index) const
 {
-    eASSERT(index < (eInt)m_data.size()-1);
+		passert((eInt)index < (eInt)m_data.size() - 1, "Invalid index");
     return m_data[index];
 }
 
 eChar & eString::operator [] (eInt index)
 {
-    eASSERT(index < (eInt)m_data.size()-1);
+		passert((eInt)index < (eInt)m_data.size() - 1, "Invalid index");
     return m_data[index];
 }
 

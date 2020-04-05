@@ -12,8 +12,11 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "../system/system.hpp"
-#include "math.hpp"
+#include "extern/Enigma/eshared/math/vector.hpp"
+#include "extern/Enigma/eshared/math/matrix.hpp"
+#include "extern/Enigma/eshared/math/plane.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
+#include "extern/Enigma/eshared/system/simd.hpp"
 
 eVector2::eVector2()
 {

@@ -12,8 +12,12 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "../system/system.hpp"
-#include "math.hpp"
+#include "extern/Enigma/eshared/math/matrix.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
+#include "extern/Enigma/eshared/math/vector.hpp"
+#include "extern/Enigma/eshared/math/quat.hpp"
+
+#include "system/sys_assert.hpp"
 
 eMatrix3x3::eMatrix3x3()
 {
@@ -147,13 +151,13 @@ eF32 eMatrix3x3::det() const
 
 eVector3 eMatrix3x3::getColumn(eU32 col) const
 {
-    eASSERT(col <= 2);
+    passert(col <= 2, "Invalid index");
     return eVector3(m[col], m[col+3], m[col+6]);
 }
 
 const eVector3 & eMatrix3x3::getRow(eU32 row) const
 {
-    eASSERT(row <= 2);
+    passert(row <= 2, "Invalid index");
     return (eVector3 &)m[row*3];
 }
 
@@ -200,7 +204,7 @@ eMatrix3x3 eMatrix3x3::operator * (eF32 s) const
 
 eMatrix3x3 eMatrix3x3::operator / (eF32 s) const
 {
-    eASSERT(!eIsFloatZero(s));
+    passert(!eIsFloatZero(s), "Division by 0");
     return *this*(1.0f/s);
 }
 
@@ -243,25 +247,25 @@ eMatrix3x3 eMatrix3x3::operator - () const
 
 eF32 & eMatrix3x3::operator [] (eInt index)
 {
-    eASSERT(index >= 0 && index < 3*3);
+    passert(index >= 0 && index < 3*3, "Invalid index");
     return m[index];
 }
 
 eF32 eMatrix3x3::operator [] (eInt index) const
 {
-    eASSERT(index >= 0 && index < 3*3);
+    passert(index >= 0 && index < 3*3, "Invalid index");
     return m[index];
 }
 
 const eF32 & eMatrix3x3::operator () (eU32 row, eU32 col) const
 {
-    eASSERT(row < 3 && col < 3);
+    passert(row < 3 && col < 3, "Invalid index");
     return mm[row][col];
 }
 
 eF32 & eMatrix3x3::operator () (eU32 row, eU32 col)
 {
-    eASSERT(row < 3 && col < 3);
+    passert(row < 3 && col < 3, "Invalid index");
     return mm[row][col];
 }
 
@@ -303,7 +307,7 @@ void eMatrix4x4::null()
 
 eBool eMatrix4x4::invert()
 {
-    ePROFILER_FUNC();
+    //ePROFILER_FUNC();
 
     const eF32 d = det();
     if (eIsFloatZero(d))
@@ -421,8 +425,8 @@ void eMatrix4x4::fromQuat(const eQuat &q)
 // field-of-view Y is expected to be in degrees
 void eMatrix4x4::perspective(eF32 fovY, eF32 aspect, eF32 zNear, eF32 zFar)
 {
-    eASSERT(fovY > 0.0f);
-    eASSERT(aspect > 0.0f);
+    passert(fovY > 0.0f, "Invalid fovY");
+    passert(aspect > 0.0f, "Invalid aspect");
 
     const eF32 yScale = eCot(eDegToRad(fovY)*0.5f);
     const eF32 xScale = yScale/aspect;
@@ -457,7 +461,7 @@ void eMatrix4x4::ortho(eF32 left, eF32 right, eF32 top, eF32 bottom, eF32 zNear,
 // 5: negative z.
 void eMatrix4x4::cubemap(eU32 face)
 {
-    eASSERT(face < 6);
+    passert(face < 6, "Invalid index");
     null();
 
     switch(face)
@@ -561,13 +565,13 @@ eF32 eMatrix4x4::det() const
 
 eVector4 eMatrix4x4::getColumn(eU32 col) const
 {
-    eASSERT(col <= 3);
+    passert(col <= 3,"Invalid index");
     return eVector4(m[col], m[col+4], m[col+8], m[col+12]);
 }
 
 const eVector4 & eMatrix4x4::getRow(eU32 row) const
 {
-    eASSERT(row <= 3);
+    passert(row <= 3, "Invalid index");
     return (eVector4 &)m[row*4];
 }
 
@@ -631,7 +635,7 @@ eMatrix4x4 eMatrix4x4::operator * (eF32 s) const
 
 eMatrix4x4 eMatrix4x4::operator / (eF32 s) const
 {
-    eASSERT(!eIsFloatZero(s));
+    passert(!eIsFloatZero(s), "Division by 0");
     return *this*(1.0f/s);
 }
 
@@ -649,7 +653,7 @@ eMatrix4x4 & eMatrix4x4::operator -= (const eMatrix4x4 &m)
 
 eMatrix4x4 & eMatrix4x4::operator *= (const eMatrix4x4 &m)
 {
-    ePROFILER_FUNC();
+    //ePROFILER_FUNC();
 
     *this = eMatrix4x4(m11*m.m11+m12*m.m21+m13*m.m31+m14*m.m41,
                        m11*m.m12+m12*m.m22+m13*m.m32+m14*m.m42,
@@ -692,25 +696,25 @@ eMatrix4x4 eMatrix4x4::operator - () const
 
 eF32 & eMatrix4x4::operator [] (eInt index)
 {
-    eASSERT(index >= 0 && index < 4*4);
+    passert(index >= 0 && index < 4*4, "Invalid index");
     return m[index];
 }
 
 eF32 eMatrix4x4::operator [] (eInt index) const
 {
-    eASSERT(index >= 0 && index < 4*4);
+    passert(index >= 0 && index < 4*4, "Invalid index");
     return m[index];
 }
 
 const eF32 & eMatrix4x4::operator () (eU32 row, eU32 col) const
 {
-    eASSERT(row < 4 && col < 4);
+    passert(row < 4 && col < 4, "Invalid index");
     return mm[row][col];
 }
 
 eF32 & eMatrix4x4::operator () (eU32 row, eU32 col)
 {
-    eASSERT(row < 4 && col < 4);
+    passert(row < 4 && col < 4, "Invalid index");
     return mm[row][col];
 }
 

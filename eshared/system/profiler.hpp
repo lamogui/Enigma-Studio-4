@@ -12,8 +12,7 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef PROFILER_HPP
-#define PROFILER_HPP
+#pragma once
 
 #if defined(eUSE_PROFILER) && defined(eEDITOR)
 
@@ -165,5 +164,3 @@ private:
 #define ePROFILER_FUNC()
 
 #endif
-
-#endif // PROFILER_HPP

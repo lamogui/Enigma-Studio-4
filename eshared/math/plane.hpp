@@ -12,8 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef PLANE_HPP
-#define PLANE_HPP
+#pragma once
+
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/math/vector.hpp"
 
 // the front side of a plane is the half
 // space the normal is pointing to. the back
@@ -48,5 +50,3 @@ private:
     eVector3            m_absNormal;
     eF32                m_d;
 };
-
-#endif // PLANE_HPP

@@ -12,8 +12,9 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef ARRAY_HPP
-#define ARRAY_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp" // for eASSERT
 
 template<class T> class eArray;
 typedef eArray<ePtr> ePtrArray;
@@ -262,5 +263,3 @@ public:
     eU32    m_capacity;
     eU32    m_typeSize;
 };
-
-#endif // ARRAY_HPP

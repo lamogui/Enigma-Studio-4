@@ -12,7 +12,8 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "system.hpp"
+#include "extern/Enigma/eshared/system/simd.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
 
 // DZ   bit 6 = 1       denormals are zero
 // FZ   bit 15 = 1      flush to zero

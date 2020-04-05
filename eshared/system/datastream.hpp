@@ -12,8 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DATA_STREAM_HPP
-#define DATA_STREAM_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/array.hpp"
+
 
 // bit- and byte-wise reading from and
 // writing to a memory buffer
@@ -54,5 +56,3 @@ private:
     eU32        m_bitCount;
     eU8         m_curByte;
 };
-
-#endif // DATA_STREAM_HPP

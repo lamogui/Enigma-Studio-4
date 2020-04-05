@@ -12,7 +12,7 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "system.hpp"
+#include "extern/Enigma/eshared/system/profiler.hpp"
 
 #if defined(eUSE_PROFILER) && defined(eEDITOR)
 

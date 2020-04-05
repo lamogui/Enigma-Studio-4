@@ -12,8 +12,14 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef GRAPHICS_HPP
-#define GRAPHICS_HPP
+#pragma once
+#include "sys_builddefines.h"
+#include "renderbase/renderbase_defines.h"
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/point.hpp"
+#include "extern/Enigma/eshared/system/color.hpp"
+#include "extern/Enigma/eshared/math/vector.hpp"
+#include "extern/Enigma/eshared/math/matrix.hpp"
 
 enum eGraphicsConsts
 {
@@ -289,5 +295,3 @@ const eU32 eVERTEX_SIZES[] =
     sizeof(eParticleVtx),
     sizeof(eInstVtx)
 };
-
-#endif // GRAPHICS_HPP

@@ -12,8 +12,11 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef VECTOR_HPP
-#define VECTOR_HPP
+#pragma once
+#include "sys_builddefines.h"
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/point.hpp"
+#include "extern/Enigma/eshared/system/color.hpp"
 
 class eMatrix4x4;
 class eMatrix3x3;
@@ -256,5 +259,3 @@ public:
     friend eVector4 operator * (eF32 s, const eVector4 &v);
     friend eVector4 operator / (eF32 s, const eVector4 &v);
 };
-
-#endif // VECTOR_HPP

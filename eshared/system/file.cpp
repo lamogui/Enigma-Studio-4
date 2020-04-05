@@ -12,10 +12,13 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef ePLAYER
+#include "extern/Enigma/eshared/system/file.hpp"
 
-#include <fstream>
-#include "system.hpp"
+// Let's wait we need that...
+#if 0 //PROUT_FILE_API 
+
+#include "system/sys_file.hpp"
+#include "system/sys_assert.hpp"
 
 using namespace std;
 
@@ -175,4 +178,4 @@ eByteArray eFile::readAll(const eChar *fileName, eBool *success)
     return buf;
 }
 
-#endif
+#endif // PROUT_FILE_API

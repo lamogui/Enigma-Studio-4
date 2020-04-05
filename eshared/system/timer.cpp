@@ -14,11 +14,15 @@
 
 #ifndef eRELEASE
 
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
+#include "extern/Enigma/eshared/system/timer.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
 
-#include "system.hpp"
+#include "sys_builddefines.h"
+#include "system/sys_assert.hpp"
+
+#ifdef PROUT_WIN32
+#include "platforms/win32/sys_win32.h"
+#endif //PROUT_WIN32
 
 eU64  eTimer::m_freq   = 0;
 eBool eTimer::m_inited = eFALSE;
@@ -87,7 +91,7 @@ void eTimer::_initialize()
     if (!m_inited)
     {
         const BOOL res = QueryPerformanceFrequency((LARGE_INTEGER *)&m_freq);
-        eASSERT(res);
+        passert(res, "QueryPerformanceFrequency call failed !");
         m_inited = eTRUE;
     }
 }

@@ -12,10 +12,11 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef COLOR_HPP
-#define COLOR_HPP
+#pragma once
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "sys_builddefines.h"
 
-#ifndef eRELEASE
+#if defined( PROUT_ENABLE_TLS )
 enum eColorConst
 {
     eCOL_RED,
@@ -32,7 +33,7 @@ enum eColorConst
     eCOL_DARKGRAY,
     eCOL_LIGHTGRAY,
  };
-#endif //eRELEASE
+#endif // defined( PROUT_ENABLE_TLS )
 
 // 8-bit per channel integer color
 class eColor
@@ -40,9 +41,9 @@ class eColor
 public:
     eColor();
     eColor(eU8 nr, eU8 ng, eU8 nb, eU8 na=255);
-#ifndef eRELEASE
+#if defined( PROUT_ENABLE_TLS )
     eColor(eColorConst cc);
-#endif 
+#endif // defined( PROUT_ENABLE_TLS )
 
     void        set(eU8 nr, eU8 ng, eU8 nb);
     void        set(eU8 nr, eU8 ng, eU8 nb, eU8 na);
@@ -93,4 +94,3 @@ public:
     };
 };
 
-#endif // COLOR_HPP

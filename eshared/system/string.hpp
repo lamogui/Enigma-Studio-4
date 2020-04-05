@@ -12,8 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef STRING_HPP
-#define STRING_HPP
+#pragma once
+#include "sys_builddefines.h"
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/array.hpp"
 
 // helper template structs for compile time string hashes
 // (taken from "Quasi compile-time string hashing" article)
@@ -82,5 +84,3 @@ public:
 private:
     eArray<eChar>   m_data;
 };
-
-#endif // STRING_HPP

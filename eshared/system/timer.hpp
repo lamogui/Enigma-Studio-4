@@ -12,10 +12,12 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef TIMER_HPP
-#define TIMER_HPP
+#pragma once
 
+#include "sys_builddefines.h"
 #ifndef eRELEASE
+#include "extern/Enigma/eshared/system/types.hpp"
+
 class eTimer
 {
 public:
@@ -44,4 +46,3 @@ private:
     eU32            m_histCount;
 };
 #endif // !eRELEASE
-#endif // TIMER_HPP

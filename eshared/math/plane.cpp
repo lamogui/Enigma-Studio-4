@@ -12,8 +12,8 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "../system/system.hpp"
-#include "math.hpp"
+#include "extern/Enigma/eshared/math/plane.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp" // for eALMOST_ZERO
 
 ePlane::ePlane() :
     m_normal(0.0f, 1.0f, 0.0f),

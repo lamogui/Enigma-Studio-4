@@ -12,12 +12,16 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
+#include "extern/Enigma/eplayer4/setupdlg.hpp"
+#include "system/sys_assert.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
+#include "extern/Enigma/eshared/system/rect.hpp"
+#include "extern/Enigma/eshared/system/array.hpp"
 
-#include "../eshared/eshared.hpp"
-#include "setupdlg.hpp"
+#ifdef PROUT_WIN32
+#include "platforms/win32/sys_file_win32.hpp"
+#endif // PROUT_WIN32
+
 
 enum eSetupDlgWidgetInfos
 {
@@ -28,9 +32,9 @@ enum eSetupDlgWidgetInfos
 
 static HWND createButton(const eChar *text, eBool checkBox, const eRect &r, HWND parent)
 {
-    HWND hwnd = CreateWindow("button", text, WS_CHILD|WS_VISIBLE|(checkBox ? BS_AUTOCHECKBOX : 0),
+    HWND hwnd = CreateWindowA("button", text, WS_CHILD|WS_VISIBLE|(checkBox ? BS_AUTOCHECKBOX : 0),
                              r.left, r.top, r.getWidth(), r.getHeight(), parent, nullptr, nullptr, nullptr);
-    eASSERT(hwnd);
+    passert(hwnd, "Setup Window creation failed !" );
     SendMessage(hwnd, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(1, 0));
     return hwnd;
 }
@@ -90,15 +94,15 @@ static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-eBool eShowSetupDialog(eSetup &setup, const eEngine &engine)
+eBool eShowSetupDialog( eSetup &setup )
 {
-    WNDCLASS wc;
+    WNDCLASSA wc;
     eMemSet(&wc, 0, sizeof(wc));
     wc.style = CS_HREDRAW|CS_VREDRAW;
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hCursor = LoadCursorA(NULL, IDC_ARROW);
     wc.lpfnWndProc = dlgProc;
     wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
-    wc.lpszClassName = "Enigma setup";
+    wc.lpszClassName = "Demo setup";
 
     RECT r;
     r.left = r.top = 0;
@@ -106,12 +110,12 @@ eBool eShowSetupDialog(eSetup &setup, const eEngine &engine)
     r.bottom = eGfx->getResolutionCount()*eBTN_HEIGHT+2*eCB_HEIGHT+5;
     AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, FALSE);
 
-    const ATOM res = RegisterClass(&wc);
-    eASSERT(res);
-    const HWND hwnd = CreateWindow("Enigma setup", "Enigma", WS_SYSMENU|WS_VISIBLE,
+    const ATOM res = RegisterClassA(&wc);
+    passert(res,"Failed to refister class Demo setup");
+    const HWND hwnd = CreateWindowA("Demo Setup", "Prout Engine", WS_SYSMENU|WS_VISIBLE,
                                    CW_USEDEFAULT, CW_USEDEFAULT, r.right-r.left,
                                    r.bottom-r.top, NULL, NULL, NULL, (ePtr)&setup);
-    eASSERT(hwnd);
+		passert(hwnd, "Failed to create window for demo setup" );
     MSG msg;
     
     do

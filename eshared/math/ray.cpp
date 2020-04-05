@@ -12,8 +12,9 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "../system/system.hpp"
-#include "math.hpp"
+#include "extern/Enigma/eshared/math/ray.hpp"
+#include "extern/Enigma/eshared/math/plane.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
 
 eRay::eRay(const eVector3 &origin, const eVector3 &dir) :
     m_origin(origin),

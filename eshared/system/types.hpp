@@ -12,8 +12,7 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef TYPES_HPP
-#define TYPES_HPP
+#pragma once
 
 // macros for concatenating strings for pre-processor
 #define eTOKENPASTE_DEF(x, y)   x##y
@@ -67,5 +66,3 @@ typedef eU32                    eID;
 #define eTRUE                   (eBool)(!0)
 #define eFALSE                  0
 #define eNOID                   0
-
-#endif // TYPES_HPP

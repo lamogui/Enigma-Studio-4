@@ -12,8 +12,9 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "../system/system.hpp"
-#include "math.hpp"
+#include "extern/Enigma/eshared/math/transform.hpp"
+#include "extern/Enigma/eshared/math/vector.hpp"
+#include "extern/Enigma/eshared/math/quat.hpp"
 
 eTransform::eTransform()
 {
@@ -25,7 +26,7 @@ eTransform::eTransform(const eQuat &rot, const eVector3 &trans, const eVector3 &
     m_uniformScale(scale.isUniform()),
     m_nrmMtxDirty(eTRUE)
 {
-    ePROFILER_FUNC();
+    //ePROFILER_FUNC();
 
     switch (order)
     {
@@ -92,7 +93,7 @@ const eMatrix4x4 & eTransform::getMatrix() const
 
 const eMatrix3x3 & eTransform::getNormalMatrix() const
 {
-    ePROFILER_FUNC();
+    //ePROFILER_FUNC();
 
     if (m_nrmMtxDirty)
     {
