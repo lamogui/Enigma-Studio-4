@@ -13,11 +13,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #pragma once
-#include "sys_builddefines.h"
 #include "renderbase/renderbase_defines.h"
-#include "extern/Enigma/eshared/system/types.hpp"
 
 #ifdef PROUT_D3D11
+
+#include "extern/Enigma/eshared/system/types.hpp"
+#include "extern/Enigma/eshared/system/rect.hpp"
+#include "extern/Enigma/eshared/engine/graphics.hpp"
+#include "extern/Enigma/eshared/system/string.hpp"
 
 struct ID3D11Device;
 struct ID3D11Buffer;
@@ -450,7 +453,7 @@ public:
 	*/
 };
 
-#define eGraphics               eGraphicsDx11
+
 #define eITexture               eITextureDx11
 #define eTexture2d              eTexture2dDx11
 #define eTexture3d              eTexture3dDx11
@@ -465,5 +468,6 @@ public:
 #define eComputeShader          eComputeShaderDx11
 #define eRenderState            eRenderStateDx11
 #define eUavBuffer              eUavBufferDx11
+
 
 #endif // PROUT_D3D11

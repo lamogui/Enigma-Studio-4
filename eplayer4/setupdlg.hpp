@@ -31,6 +31,10 @@ struct eSetup
     eBool   fullScreen;
 };
 
+#ifdef PROUT_SHOWSETUP_DIALOG
+
 // returns false, if config dialog was canceled,
 // otherwise true is returned (=> start demo)
 eBool eShowSetupDialog(eSetup &setup);
+
+#endif //PROUT_SHOWSETUP_DIALOG

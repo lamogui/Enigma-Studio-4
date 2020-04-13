@@ -12,7 +12,10 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+
 #include "extern/Enigma/eplayer4/setupdlg.hpp"
+
+#ifdef PROUT_SHOWSETUP_DIALOG
 #include "system/sys_assert.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
 #include "extern/Enigma/eshared/system/rect.hpp"
@@ -22,6 +25,7 @@
 #include "platforms/win32/sys_file_win32.hpp"
 #endif // PROUT_WIN32
 
+#include "renderbase/Graphics.hpp"
 
 enum eSetupDlgWidgetInfos
 {
@@ -111,7 +115,7 @@ eBool eShowSetupDialog( eSetup &setup )
     AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, FALSE);
 
     const ATOM res = RegisterClassA(&wc);
-    passert(res,"Failed to refister class Demo setup");
+    passert(res,"Failed to register class Demo setup");
     const HWND hwnd = CreateWindowA("Demo Setup", "Prout Engine", WS_SYSMENU|WS_VISIBLE,
                                    CW_USEDEFAULT, CW_USEDEFAULT, r.right-r.left,
                                    r.bottom-r.top, NULL, NULL, NULL, (ePtr)&setup);
@@ -130,4 +134,7 @@ eBool eShowSetupDialog( eSetup &setup )
 
     // has user clicked a resolution button or not?
     return (msg.wParam == IDOK ? eTRUE : eFALSE);
+
 }
+
+#endif // PROUT_SHOWSETUP_DIALOG

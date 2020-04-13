@@ -19,6 +19,7 @@
 #include "extern/Enigma/eshared/engine/graphics.hpp"
 #include "extern/Enigma/eshared/engine/graphicsdx11.hpp"
 #include "extern/Enigma/eshared/system/array.hpp"
+#include "system/sys_assert.hpp"
 
 static void eCallDx(const HRESULT res)
 {
@@ -121,29 +122,12 @@ INPUT_LAYOUT_INFOS[] =
     }
 };
 
-eREGISTER_ENGINE_SHADER_WITHSUFFIX(globals, i);
-//eREGISTER_ENGINE_SHADER_WITHSUFFIX(utils, i);
-
 #ifndef eDEBUG
 class eShaderIncludeHandler : public ID3DInclude
 {
 public:
     STDMETHOD(Open)(D3D_INCLUDE_TYPE includeType, const eChar *fileName, eConstPtr parentData, eConstPtr *data, eU32 *bytes)
     {
-#ifdef ePLAYER
-
-        if (eStrCompare(fileName, "globals.hlsli") == 0) {
-            *data = eEngine::demodata_shader_indices[eSHADER_IDX_globals];
-            *bytes = ((eU32&)eEngine::demodata_shader_indices[eSHADER_IDX_globals + 1] - (eU32&)eEngine::demodata_shader_indices[eSHADER_IDX_globals]) - 1;
-            return S_OK;
-        }
-#else
-        if (eStrCompare(fileName, "globals.hlsli") == 0) {
-            *data = globals_hlsli;
-            *bytes = eStrLength(globals_hlsli);
-            return S_OK;
-		}
-#endif
         return S_FALSE;
     }
 
@@ -410,7 +394,6 @@ void eGraphicsDx11::endFrame()
     m_engineStats.usedGpuMem = m_engineStats.usedGpuMemGeo+m_engineStats.usedGpuMemTex;
 #endif
 
-    ePROFILER_FUNC();
     eCallDx(m_swapChain->Present(m_vsync ? 1 : 0, 0));
 
     // prevents stuttering
@@ -497,29 +480,29 @@ eSize eGraphicsDx11::getWndSize() const
     return eSize(m_wndWidth, m_wndHeight);
 }
 
-void eGraphics::setMatrices(const eMatrix4x4 &modelMtx, const eMatrix4x4 &viewMtx, const eMatrix4x4 &projMtx)
+void eGraphicsDx11::setMatrices(const eMatrix4x4 &modelMtx, const eMatrix4x4 &viewMtx, const eMatrix4x4 &projMtx)
 {
     m_modelMtx = modelMtx;
     m_viewMtx = viewMtx;
     m_projMtx = projMtx;
 }
 
-const eMatrix4x4 & eGraphics::getViewMatrix() const
+const eMatrix4x4 & eGraphicsDx11::getViewMatrix() const
 {
     return m_viewMtx;
 }
 
-const eMatrix4x4 & eGraphics::getModelMatrix() const
+const eMatrix4x4 & eGraphicsDx11::getModelMatrix() const
 {
     return m_modelMtx;
 }
 
-const eMatrix4x4 & eGraphics::getProjMatrix() const
+const eMatrix4x4 & eGraphicsDx11::getProjMatrix() const
 {
     return m_projMtx;
 }
 
-void eGraphics::getBillboardVectors(eVector3 &right, eVector3 &up, eVector3 *view) 
+void eGraphicsDx11::getBillboardVectors(eVector3 &right, eVector3 &up, eVector3 *view)
 {
     right.set(m_viewMtx.m11, m_viewMtx.m21, m_viewMtx.m31);
     right.normalize();
@@ -1626,8 +1609,6 @@ eGeoBufferDx11 * eGraphicsDx11::_createGeoBuffer(eBool isVb, eU32 size, eBool dy
 
 void eGraphicsDx11::_activateConstBuffers()
 {
-    ePROFILER_FUNC();
-
     // update constant buffers
     for (eU32 i=0; i<m_cbufs.size(); i++)
         m_cbufs[i].inUse = eFALSE;
@@ -1762,8 +1743,6 @@ void eGraphicsDx11::_activateTargets()
 
 void eGraphicsDx11::_activateRenderState()
 {
-    ePROFILER_FUNC();
-
     _activateConstBuffers();
 
     eU32 i;
