@@ -19,13 +19,15 @@
 #include "system/sys_assert.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
 #include "extern/Enigma/eshared/system/rect.hpp"
-#include "extern/Enigma/eshared/system/array.hpp"
+#include "extern/Enigma/eshared/system/list.hpp"
+#include "system/sys_defines.h"
 
 #ifdef PROUT_WIN32
 #include "platforms/win32/sys_file_win32.hpp"
 #endif // PROUT_WIN32
+#include "system/sys_monitors.hpp"
 
-#include "renderbase/Graphics.hpp"
+static eList< eSize > s_MonitorResolutions;
 
 enum eSetupDlgWidgetInfos
 {
@@ -45,7 +47,7 @@ static HWND createButton(const eChar *text, eBool checkBox, const eRect &r, HWND
 
 static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-    static eArray<HWND> resBtns;
+    static eList<HWND> resBtns;
     static HWND windowedBtn, vsyncBtn;
     static eSetup *setup = nullptr;
 
@@ -53,19 +55,19 @@ static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     {
         setup = (eSetup *)((CREATESTRUCT *)lparam)->lpCreateParams;
 
-        for (eU32 i=0; i<eGfx->getResolutionCount(); i++)
+        for (eU32 i=0; i< s_MonitorResolutions.Num(); i++)
         {
-            const eSize &res = eGfx->getResolution(i);
+            const eSize &res = s_MonitorResolutions[ i ];
             eChar buf[32];
             eStrCopy(buf, eIntToStr(res.width));
             eStrAppend(buf, "  x  ");
             eStrAppend(buf, eIntToStr(res.height));
 
             HWND btn = createButton(buf, eFALSE, eRect(0, i*eBTN_HEIGHT, eBTN_WIDTH, (i+1)*eBTN_HEIGHT), hwnd);
-            resBtns.append(btn);
+            resBtns.Append(btn);
         }
 
-        const eU32 y = eGfx->getResolutionCount()*eBTN_HEIGHT;
+        const eU32 y = s_MonitorResolutions.Num()*eBTN_HEIGHT;
         windowedBtn = createButton("Windowed", eTRUE, eRect(eCB_HEIGHT, y, eBTN_WIDTH, y+eBTN_HEIGHT), hwnd);
         vsyncBtn = createButton("V-Sync", eTRUE, eRect(eCB_HEIGHT, y+eCB_HEIGHT, eBTN_WIDTH, y+2*eBTN_HEIGHT), hwnd);
         return 0;
@@ -74,13 +76,13 @@ static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     {
         if (HIWORD(wparam) == BN_CLICKED)
         {
-            for (eU32 i=0; i<resBtns.size(); i++)
+            for (eU32 i=0; i< s_MonitorResolutions.Num(); i++)
             {
                 if (lparam == (LPARAM)resBtns[i])
                 {
                     setup->fullScreen = (SendMessage(windowedBtn, BM_GETCHECK, 0, 0) != BST_CHECKED);
                     setup->vsync = (SendMessage(vsyncBtn, BM_GETCHECK, 0, 0) != BST_CHECKED);
-                    setup->res = eGfx->getResolution(i);
+                    setup->res = s_MonitorResolutions[ i ];
                     DestroyWindow(hwnd);
                     PostQuitMessage(IDOK);
                 }
@@ -100,6 +102,8 @@ static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 eBool eShowSetupDialog( eSetup &setup )
 {
+		Sys_GetMonitorResolutions( s_MonitorResolutions );
+
     WNDCLASSA wc;
     eMemSet(&wc, 0, sizeof(wc));
     wc.style = CS_HREDRAW|CS_VREDRAW;
@@ -111,7 +115,7 @@ eBool eShowSetupDialog( eSetup &setup )
     RECT r;
     r.left = r.top = 0;
     r.right = eBTN_WIDTH;
-    r.bottom = eGfx->getResolutionCount()*eBTN_HEIGHT+2*eCB_HEIGHT+5;
+    r.bottom = s_MonitorResolutions.Num() * eBTN_HEIGHT+2*eCB_HEIGHT+5;
     AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, FALSE);
 
     const ATOM res = RegisterClassA(&wc);

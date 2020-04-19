@@ -124,13 +124,6 @@ enum eTextureFlags
     eTEX_UAV         = 8,
 };
 
-enum eMessage
-{
-    eMSG_BUSY,
-    eMSG_IDLE,
-    eMSG_QUIT
-};
-
 enum eConstBufferIndex
 {
     eCBI_CAMERA,
@@ -174,12 +167,6 @@ enum eDepthBias
     eDB_NONE,
     eDB_BEFORE,
     eDB_BEHIND
-};
-
-enum eWindowFlags
-{
-    eWF_FULLSCREEN = 0x01,
-    eWF_VSYNC      = 0x02,
 };
 
 enum eGeometryFlags

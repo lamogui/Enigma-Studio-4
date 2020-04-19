@@ -15,7 +15,7 @@
 #pragma once
 #include "sys_builddefines.h"
 #include "extern/Enigma/eshared/system/types.hpp"
-#include "extern/Enigma/eshared/system/array.hpp"
+#include "extern/Enigma/eshared/system/list.hpp"
 
 // helper template structs for compile time string hashes
 // (taken from "Quasi compile-time string hashing" article)
@@ -53,24 +53,24 @@ public:
     eString(const eChar *str, eU32 length);
     eString(const eString &str);
 
-    eU32            length() const;
-    eBool           equals(const eString &str, eU32 count) const;
+    eU32            Length() const;
+    eBool           Equals(const eString &str, eU32 count) const;
 
-    void            padLeft(eU32 totalLen, eChar chr);
-    void            makeUpper();
-    eBool           split(eChar token, eString &left, eString &right) const;
-    eString         subStr(eU32 startIndex, eU32 endIndex) const;
-    eString         simplified() const;
-    void            remove(eU32 startIndex, eU32 endIndex);
-    void            removeAt(eU32 index);
+    void            PadLeft(eU32 totalLen, eChar chr);
+    void            MakeUpper();
+    eBool           Split(eChar token, eString &left, eString &right) const;
+    eString         SubStr(eU32 startIndex, eU32 endIndex) const;
+    eString         Simplified() const;
+    void            Remove(eU32 startIndex, eU32 endIndex);
+    void            RemoveAt(eU32 index);
 
     eString         operator + (const eString &str) const;
     eString &       operator += (eChar c);
     eString &       operator += (const eString &str);
     eString &       operator = (const eChar *str);
 
-    const eChar &   at(eU32 index) const;
-    eChar &         at(eU32 index);
+    const eChar &   At(eU32 index) const;
+    eChar &         At(eU32 index);
     const eChar &   operator [] (eInt index) const;
     eChar &         operator [] (eInt index);
 
@@ -82,5 +82,5 @@ public:
 	const eChar *	c_str() const;
 
 private:
-    eArray<eChar>   m_data;
+    eList<eChar>   m_data;
 };

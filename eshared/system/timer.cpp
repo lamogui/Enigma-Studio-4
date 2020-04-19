@@ -18,6 +18,7 @@
 #include "extern/Enigma/eshared/system/runtime.hpp"
 
 #include "sys_builddefines.h"
+#include "system/sys_defines.h"
 #include "system/sys_assert.hpp"
 
 #ifdef PROUT_WIN32

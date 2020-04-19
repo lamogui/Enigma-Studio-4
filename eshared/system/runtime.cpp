@@ -12,6 +12,7 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include "system/sys_defines.h"
 #ifdef PROUT_WIN32
 #include "platforms/win32/sys_win32.h"
 #endif // PROUT_WIN32

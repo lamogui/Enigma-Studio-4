@@ -18,8 +18,9 @@
 
 #include "extern/Enigma/eshared/engine/graphics.hpp"
 #include "extern/Enigma/eshared/engine/graphicsdx11.hpp"
-#include "extern/Enigma/eshared/system/array.hpp"
+#include "extern/Enigma/eshared/system/list.hpp"
 #include "system/sys_assert.hpp"
+#include "extern/Enigma/eshared/system/runtime.hpp"
 
 static void eCallDx(const HRESULT res)
 {
@@ -141,9 +142,6 @@ static eShaderIncludeHandler m_ShaderIncludeHandler;
 #endif
 
 eGraphicsDx11::eGraphicsDx11() :
-    m_dxgiFactory(nullptr),
-    m_adapter(nullptr),
-    m_adapterOutput(nullptr),
     m_swapChain(nullptr),
     m_dev(nullptr),
     m_devCtx(nullptr),
@@ -151,12 +149,6 @@ eGraphicsDx11::eGraphicsDx11() :
     m_dsScreen(nullptr),
     m_dsvScreen(nullptr),
     m_dsvActive(nullptr),
-    m_hwnd(nullptr),
-    m_ownWindow(eFALSE),
-    m_fullScreen(eFALSE),
-    m_vsync(eTRUE),
-    m_wndWidth(800),
-    m_wndHeight(600),
     m_startPull(0),
     m_frameNum(0)
 {
@@ -186,40 +178,6 @@ eGraphicsDx11::~eGraphicsDx11()
     shutdown();
 }
 
-void eGraphicsDx11::initialize()
-{
-    eCallDx(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (ePtr *)&m_dxgiFactory));
-    
-    if (!FAILED(m_dxgiFactory->EnumAdapters1(0, &m_adapter)))
-    {
-        eCallDx(m_adapter->EnumOutputs(0, &m_adapterOutput));
-
-        eU32 numModes = 0;
-        if (!FAILED(m_adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, nullptr)))
-        {
-            eArray<DXGI_MODE_DESC> displayModes(numModes);
-            eCallDx(m_adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, &displayModes[0]));
-
-            for (eU32 i=0; i<numModes; i++)
-            {
-                DXGI_MODE_DESC &mode = displayModes[i];
-                const eSize res(mode.Width, mode.Height);
-
-                // only list resolutions > 800x600 and there are
-                // many resolutions with same width/height but
-                // different HZ values => add just one auf them
-//                if (res.width >= 800 && res.height >= 600)
-                    m_resolutions.appendUnique(res);
-            }
-
-            return;
-        }
-    }
-
-    const eSize res(640, 480);
-    m_resolutions.append(res);
-}
-
 void eGraphicsDx11::shutdown()
 {
     // the following resources should be released
@@ -230,100 +188,59 @@ void eGraphicsDx11::shutdown()
     eASSERT(m_uavBufs.isEmpty());
     eASSERT(m_geos.isEmpty());
 
-    for (eInt i=(eInt)m_shaders.size()-1; i>=0; i--)
+    for (eInt i=(eInt)m_shaders.Num()-1; i>=0; i--)
         removeShader(m_shaders[i]);
-    for (eU32 i=0; i<m_inputLayouts.size(); i++)
+    for (eU32 i=0; i<m_inputLayouts.Num(); i++)
         eReleaseCom(m_inputLayouts[i]);
-    for (eU32 i=0; i<m_depthStates.size(); i++)
+    for (eU32 i=0; i<m_depthStates.Num(); i++)
         eReleaseCom(m_depthStates[i].d3dDss);
-    for (eU32 i=0; i<m_rasterStates.size(); i++)
+    for (eU32 i=0; i<m_rasterStates.Num(); i++)
         eReleaseCom(m_rasterStates[i].d3dRs);
-    for (eU32 i=0; i<m_samplerStates.size(); i++)
+    for (eU32 i=0; i<m_samplerStates.Num(); i++)
         eReleaseCom(m_samplerStates[i].d3dSs);
-    for (eU32 i=0; i<m_blendStates.size(); i++)
+    for (eU32 i=0; i<m_blendStates.Num(); i++)
         eReleaseCom(m_blendStates[i].d3dBs);
 
-    for (eU32 i=0; i<m_geoBufs.size(); i++)
+    for (eU32 i=0; i<m_geoBufs.Num(); i++)
     {
         eReleaseCom(m_geoBufs[i]->d3dBuf);
         eDelete(m_geoBufs[i]);
     }
 
     eASSERT(m_shaders.isEmpty());
-    m_geoBufs.clear();
-    m_inputLayouts.clear();
-    m_depthStates.clear();
-    m_rasterStates.clear();
-    m_samplerStates.clear();
-    m_blendStates.clear();
+    m_geoBufs.Clear();
+    m_inputLayouts.Clear();
+    m_depthStates.Clear();
+    m_rasterStates.Clear();
+    m_samplerStates.Clear();
+    m_blendStates.Clear();
 
-    if (m_fullScreen)
-        m_swapChain->SetFullscreenState(FALSE, nullptr);
+    //if (m_fullScreen)
+    //    m_swapChain->SetFullscreenState(FALSE, nullptr);
 
     eReleaseCom(m_dsvScreen);
     eReleaseCom(m_dsScreen);
     eReleaseCom(m_rtvScreen);
     eReleaseCom(m_swapChain);
-    eReleaseCom(m_adapterOutput);
-    eReleaseCom(m_adapter);
-    eReleaseCom(m_dxgiFactory);
     eReleaseCom(m_devCtx);
     eReleaseCom(m_dev);
 
-    if (m_fullScreen)
-        ShowCursor(TRUE);
+    //if (m_fullScreen)
+    //    ShowCursor(TRUE);
 
-    if (m_ownWindow)
+    /*if (m_ownWindow)
     {
         DestroyWindow((HWND)m_hwnd);
         m_hwnd = nullptr;
-    }
+    }*/
 }
 
 void eGraphicsDx11::openWindow(eU32 width, eU32 height, eInt windowFlags, ePtr hwnd)
 {
-    m_wndWidth = width;
-    m_wndHeight = height;
-    m_fullScreen = (windowFlags&eWF_FULLSCREEN);
-    m_vsync = (windowFlags&eWF_VSYNC);
-
-    if (hwnd)
-    {
-        m_hwnd = (HWND)hwnd;
-        m_ownWindow = eFALSE;
-    }
-    else
-    {
-        m_hwnd = _createWindow(width, height, m_fullScreen);
-        m_ownWindow = eTRUE;
-    }
-
     _createDeviceAndSwapChain();
     _createRenderTargetView();
     _createDepthStencilView();
-    _createDynamicBuffers();
-
-    if (m_fullScreen)
-        ShowCursor(FALSE);
-}
-
-void eGraphicsDx11::setWindowTitle(const eString &title)
-{
-    SetWindowTextA((HWND)m_hwnd, title.c_str());
-}
-
-void eGraphicsDx11::handleMessages(eMessage &msg)
-{
-    msg = eMSG_IDLE;
-
-    MSG winMsg;
-    if (PeekMessage(&winMsg, nullptr, 0, 0, PM_REMOVE))
-    {
-        TranslateMessage(&winMsg);
-        DispatchMessage(&winMsg);
-        
-        msg = (winMsg.message == WM_QUIT ? eMSG_QUIT : eMSG_BUSY);
-    }
+    _createDynamicBuffers();    
 }
 
 void eGraphicsDx11::resizeBackbuffer(eU32 width, eU32 height)
@@ -438,16 +355,6 @@ void eGraphicsDx11::reloadEditedShaders()
 }
 #endif
 
-eU32 eGraphicsDx11::getResolutionCount() const
-{
-    return m_resolutions.size();
-}
-
-const eSize & eGraphicsDx11::getResolution(eU32 index) const
-{
-    return m_resolutions[index];
-}
-
 #ifdef eEDITOR
 const eRenderStats & eGraphicsDx11::getRenderStats() const
 {
@@ -459,26 +366,6 @@ const eEngineStats & eGraphicsDx11::getEngineStats() const
     return m_engineStats;
 }
 #endif
-
-eBool eGraphicsDx11::getFullScreen() const
-{
-    return m_fullScreen;
-}
-
-eU32 eGraphicsDx11::getWndWidth() const
-{
-    return m_wndWidth;
-}
-
-eU32 eGraphicsDx11::getWndHeight() const
-{
-    return m_wndHeight;
-}
-
-eSize eGraphicsDx11::getWndSize() const
-{
-    return eSize(m_wndWidth, m_wndHeight);
-}
 
 void eGraphicsDx11::setMatrices(const eMatrix4x4 &modelMtx, const eMatrix4x4 &viewMtx, const eMatrix4x4 &projMtx)
 {
@@ -518,13 +405,13 @@ void eGraphicsDx11::getBillboardVectors(eVector3 &right, eVector3 &up, eVector3 
 
 eRenderStateDx11 & eGraphicsDx11::pushRenderState()
 {
-    m_rsStack.push(m_rsEdit);
+    m_rsStack.Push(m_rsEdit);
     return m_rsEdit;
 }
 
 eRenderStateDx11 & eGraphicsDx11::popRenderState()
 {
-    m_rsEdit = m_rsStack.pop();
+    m_rsEdit = m_rsStack.Pop();
     return m_rsEdit;
 }
 
@@ -566,7 +453,7 @@ eRenderStateDx11 & eGraphicsDx11::getRenderState()
 
 eGeometry * eGraphicsDx11::addGeometry(eInt flags, eVertexType vtxType, eGeoPrimitiveType primType, eGeoFillCallback fillCb, ePtr fcParam)
 {
-    eGeometry *geo = m_geos.append(new eGeometryDx11);
+    eGeometry *geo = m_geos.Append(new eGeometryDx11);
     geo->dynamic = (flags&eGEO_DYNAMIC);
     geo->vtxType = vtxType;
     geo->primType = primType;
@@ -596,7 +483,7 @@ eGeometry * eGraphicsDx11::addGeometry(eInt flags, eVertexType vtxType, eGeoPrim
 
 void eGraphicsDx11::removeGeometry(eGeometry *&geo)
 {
-    const eInt index = m_geos.find(geo);
+    const eInt index = m_geos.Find(geo);
     if (index >= 0)
     {
 //	if (!geo->dynamic)
@@ -608,7 +495,7 @@ void eGraphicsDx11::removeGeometry(eGeometry *&geo)
             geo->vb->allocs--;
 
         eDelete(geo);
-        m_geos.removeAt(index);
+        m_geos.RemoveAt(index);
     }
 }
 
@@ -663,7 +550,7 @@ void eGraphicsDx11::beginLoadGeometry(eGeometryDx11 *geo, eU32 vertexCount, ePtr
     else // is static geometry?
     {
         // vb
-        for (eU32 i=GBID_BUFS_USER; i<m_geoBufs.size(); i++)
+        for (eU32 i=GBID_BUFS_USER; i<m_geoBufs.Num(); i++)
         {
             if (m_geoBufs[i]->isVb)
             {
@@ -679,11 +566,11 @@ void eGraphicsDx11::beginLoadGeometry(eGeometryDx11 *geo, eU32 vertexCount, ePtr
         if (!geo->vb)
             geo->vb = _createGeoBuffer(eTRUE, eMax(reqVbSize, (eU32)GBS_VB_DYN), eFALSE);
 
-        m_geoMapData[0].resize(reqVbSize);
+        m_geoMapData[0].Resize(reqVbSize);
         *vertices = &m_geoMapData[0][0];
 
         // ib
-        for (eU32 i=GBID_BUFS_USER; i<m_geoBufs.size(); i++)
+        for (eU32 i=GBID_BUFS_USER; i<m_geoBufs.Num(); i++)
         {
             if (!m_geoBufs[i]->isVb)
             {
@@ -699,7 +586,7 @@ void eGraphicsDx11::beginLoadGeometry(eGeometryDx11 *geo, eU32 vertexCount, ePtr
         if (!geo->ib)
             geo->ib = _createGeoBuffer(eFALSE, eMax(reqIbSize, (eU32)GBS_IB_DYN), eFALSE);
 
-        m_geoMapData[1].resize(reqIbSize);
+        m_geoMapData[1].Resize(reqIbSize);
         *indices = &m_geoMapData[1][0];
     }
 
@@ -763,7 +650,7 @@ void eGraphicsDx11::endLoadGeometry(eGeometry *geo, eInt vertexCount, eInt index
     geo->vb->pos += geo->usedVerts*geo->vtxSize;
 }
 
-void eGraphicsDx11::renderGeometry(eGeometry *geo, const eArray<eInstVtx> &insts)
+void eGraphicsDx11::renderGeometry(eGeometry *geo, const eList<eInstVtx> &insts)
 {
     // dynamic buffer has to be filled from callback?
     if (geo->dynamic && geo->fillCb)
@@ -776,7 +663,7 @@ void eGraphicsDx11::renderGeometry(eGeometry *geo, const eArray<eInstVtx> &insts
         return;
 
     D3D11_PRIMITIVE_TOPOLOGY topology;
-    const eU32 numObjs = (insts.isEmpty() ? 1 : insts.size());
+    const eU32 numObjs = (insts.IsEmpty() ? 1 : insts.Num());
     eU32 triCount = 0;
     eU32 lineCount = 0;
 
@@ -825,9 +712,9 @@ void eGraphicsDx11::renderGeometry(eGeometry *geo, const eArray<eInstVtx> &insts
     m_devCtx->IASetVertexBuffers(0, 1, &geo->vb->d3dBuf, &eVERTEX_SIZES[geo->vtxType], &geo->vbPos);
 
     // fill instance buffer
-    if (insts.size() > 0)
+    if (insts.Num() > 0)
     {
-        const eU32 bufSize = insts.size()*sizeof(eInstVtx);
+        const eU32 bufSize = insts.Num()*sizeof(eInstVtx);
         eASSERT(bufSize <= m_geoBufs[GBID_VB_INST]->size);
         const eU32 nextInstVbPos = m_geoBufs[GBID_VB_INST]->pos+bufSize;
 
@@ -853,8 +740,8 @@ void eGraphicsDx11::renderGeometry(eGeometry *geo, const eArray<eInstVtx> &insts
         m_devCtx->IASetIndexBuffer(m_geoBufs[GBID_IB_QUAD]->d3dBuf, DXGI_FORMAT_R16_UINT, 0);
         const eU32 numIndices = triCount*3;
 
-        if (insts.size())
-            m_devCtx->DrawIndexedInstanced(numIndices, insts.size(), 0, 0, 0);
+        if (insts.Num())
+            m_devCtx->DrawIndexedInstanced(numIndices, insts.Num(), 0, 0, 0);
         else
             m_devCtx->DrawIndexed(numIndices, 0, 0);
     }
@@ -862,8 +749,8 @@ void eGraphicsDx11::renderGeometry(eGeometry *geo, const eArray<eInstVtx> &insts
     {
         m_devCtx->IASetIndexBuffer(geo->ib->d3dBuf, (geo->idxSize == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT), geo->ibPos);
 
-        if (insts.size())
-            m_devCtx->DrawIndexedInstanced(geo->usedIndices, insts.size(), 0, 0, 0);
+        if (insts.Num())
+            m_devCtx->DrawIndexedInstanced(geo->usedIndices, insts.Num(), 0, 0, 0);
         else
             m_devCtx->DrawIndexed(geo->usedIndices, 0, 0);
     }
@@ -871,8 +758,8 @@ void eGraphicsDx11::renderGeometry(eGeometry *geo, const eArray<eInstVtx> &insts
     {
         m_devCtx->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
 
-        if (insts.size())
-            m_devCtx->DrawInstanced(geo->usedVerts, insts.size(), 0, 0);
+        if (insts.Num())
+            m_devCtx->DrawInstanced(geo->usedVerts, insts.Num(), 0, 0);
         else
             m_devCtx->Draw(geo->usedVerts, 0);
     }
@@ -891,7 +778,7 @@ eTexture2dDx11 * eGraphicsDx11::addTexture2d(eU32 width, eU32 height, eInt flags
         eASSERT(!(flags&eTEX_DYNAMIC));
 #endif
 
-    eTexture2dDx11 *tex = m_texs2d.append(new eTexture2dDx11);
+    eTexture2dDx11 *tex = m_texs2d.Append(new eTexture2dDx11);
     eMemSet(tex, 0, sizeof(eTexture2dDx11));
     tex->width = width;
     tex->height = height;
@@ -971,7 +858,7 @@ eTexture3dDx11 * eGraphicsDx11::addTexture3d(eU32 width, eU32 height, eU32 depth
     eASSERT(width*height*depth > 0);
     eASSERT(!(flags&eTEX_TARGET));
 
-    eTexture3dDx11 *tex = m_texs3d.append(new eTexture3dDx11);
+    eTexture3dDx11 *tex = m_texs3d.Append(new eTexture3dDx11);
     tex->width = width;
     tex->height = height;
     tex->pixelSize = TEXTURE_FORMAT_INFOS[format].pixelSize;
@@ -1011,7 +898,7 @@ eTextureCubeDx11 * eGraphicsDx11::addTextureCube(eU32 size, eInt flags, eTexture
 
     eASSERT(size > 0);
 
-    eTextureCubeDx11 *tex = m_texsCube.append(new eTextureCubeDx11);
+    eTextureCubeDx11 *tex = m_texsCube.Append(new eTextureCubeDx11);
     eMemSet(tex, 0, sizeof(eTextureCubeDx11));
     tex->size = size;
     tex->pixelSize = TEXTURE_FORMAT_INFOS[format].pixelSize;
@@ -1069,7 +956,7 @@ void eGraphicsDx11::removeTexture2d(eTexture2dDx11 *&tex)
 {
 	//g_numRemsTex2d++;
 
-    const eInt index = m_texs2d.find(tex);
+    const eInt index = m_texs2d.Find(tex);
     if (index >= 0)
     {
         // bound as texture?
@@ -1094,7 +981,7 @@ void eGraphicsDx11::removeTexture2d(eTexture2dDx11 *&tex)
         eReleaseCom(tex->d3dRtv);
         eReleaseCom(tex->d3dSrv);
         eDelete(tex);
-        m_texs2d.removeAt(index);
+        m_texs2d.RemoveAt(index);
     }
 }
 
@@ -1102,7 +989,7 @@ void eGraphicsDx11::removeTexture3d(eTexture3dDx11 *&tex)
 {
 	//g_numRemsTex3d++;
 
-    const eInt index = m_texs3d.find(tex);
+    const eInt index = m_texs3d.Find(tex);
     if (index >= 0)
     {
         // bound as texture?
@@ -1119,7 +1006,7 @@ void eGraphicsDx11::removeTexture3d(eTexture3dDx11 *&tex)
         eReleaseCom(tex->d3dTex);
         eReleaseCom(tex->d3dSrv);
         eDelete(tex);
-        m_texs3d.removeAt(index);
+        m_texs3d.RemoveAt(index);
     }
 }
 
@@ -1127,7 +1014,7 @@ void eGraphicsDx11::removeTextureCube(eTextureCubeDx11 *&tex)
 {
 	//g_numRemsTexCube++;
 
-    const eInt index = m_texsCube.find(tex);
+    const eInt index = m_texsCube.Find(tex);
     if (index >= 0)
     {
         // bound as texture?
@@ -1153,7 +1040,7 @@ void eGraphicsDx11::removeTextureCube(eTextureCubeDx11 *&tex)
         eReleaseCom(tex->d3dTex);
         eReleaseCom(tex->d3dSrv);
         eDelete(tex);
-        m_texsCube.removeAt(index);
+        m_texsCube.RemoveAt(index);
     }
 }
 
@@ -1215,7 +1102,7 @@ void eGraphicsDx11::updateTextureCube(eTextureCubeDx11 *tex, eConstPtr data, eCu
     m_devCtx->UpdateSubresource(tex->d3dTex, face, &box, data, tex->size*tex->pixelSize, 0);
 }
 
-void eGraphicsDx11::readTexture2d(eTexture2dDx11 *tex, eArray<eColor> &texData) const
+void eGraphicsDx11::readTexture2d(eTexture2dDx11 *tex, eList<eColor> &texData) const
 {
     // create staging texture for read back
     if (!tex->d3dReadTex)
@@ -1235,7 +1122,7 @@ void eGraphicsDx11::readTexture2d(eTexture2dDx11 *tex, eArray<eColor> &texData) 
     D3D11_MAPPED_SUBRESOURCE msr;
     m_devCtx->CopyResource(tex->d3dReadTex, tex->d3dTex);
     m_devCtx->Map(tex->d3dReadTex, 0, D3D11_MAP_READ, 0, &msr);
-    texData.resize(tex->height*tex->width);
+    texData.Resize(tex->height*tex->width);
 
     if (tex->format == eTFO_ARGB8)
     {
@@ -1250,7 +1137,7 @@ void eGraphicsDx11::readTexture2d(eTexture2dDx11 *tex, eArray<eColor> &texData) 
 
 eUavBufferDx11 * eGraphicsDx11::addUavBuffer(eU32 width, eU32 height, eTextureFormat format)
 {
-    eUavBufferDx11 *uav = m_uavBufs.append(new eUavBufferDx11);
+    eUavBufferDx11 *uav = m_uavBufs.Append(new eUavBufferDx11);
     uav->tex = addTexture2d(width, height, eTEX_UAV|eTEX_NOMIPMAPS, format);
 
     D3D11_UNORDERED_ACCESS_VIEW_DESC viewDesc;
@@ -1266,13 +1153,13 @@ eUavBufferDx11 * eGraphicsDx11::addUavBuffer(eU32 width, eU32 height, eTextureFo
 
 void eGraphicsDx11::removeUavBuffer(eUavBufferDx11 *&uav)
 {
-    const eInt index = m_uavBufs.find(uav);
+    const eInt index = m_uavBufs.Find(uav);
     if (index >= 0)
     {
         removeTexture2d(uav->tex);
         eReleaseCom(uav->d3dUav);
         eDelete(uav);
-        m_uavBufs.removeAt(index);
+        m_uavBufs.RemoveAt(index);
     }
 }
 
@@ -1288,7 +1175,7 @@ ePixelShaderDx11 * eGraphicsDx11::loadPixelShader(const eChar *src, const eChar 
     ePixelShaderDx11 *shader = (ePixelShaderDx11 *)_findShader(src, define);
     if (!shader)
     {
-        shader = (ePixelShaderDx11 *)m_shaders.append(new ePixelShaderDx11);
+        shader = (ePixelShaderDx11 *)m_shaders.Append(new ePixelShaderDx11);
         shader->type = eST_PS;
         _loadShader(src, define, shader);
     }
@@ -1301,7 +1188,7 @@ eVertexShaderDx11 * eGraphicsDx11::loadVertexShader(const eChar *src, const eCha
     eVertexShaderDx11 *shader = (eVertexShaderDx11 *)_findShader(src, define);
     if (!shader)
     {
-        shader = (eVertexShaderDx11 *)m_shaders.append(new eVertexShaderDx11);
+        shader = (eVertexShaderDx11 *)m_shaders.Append(new eVertexShaderDx11);
         shader->type = eST_VS;
         _loadShader(src, define, shader);
     }
@@ -1314,7 +1201,7 @@ eGeometryShaderDx11 * eGraphicsDx11::loadGeometryShader(const eChar *src, const 
     eGeometryShaderDx11 *shader = (eGeometryShaderDx11 *)_findShader(src, define);
     if (!shader)
     {
-        shader = (eGeometryShaderDx11 *)m_shaders.append(new eGeometryShaderDx11);
+        shader = (eGeometryShaderDx11 *)m_shaders.Append(new eGeometryShaderDx11);
         shader->type = eST_GS;
         _loadShader(src, define, shader);
     }
@@ -1327,7 +1214,7 @@ eComputeShaderDx11 * eGraphicsDx11::loadComputeShader(const eChar *src, const eC
     eComputeShaderDx11 *shader = (eComputeShaderDx11 *)_findShader(src, define);
     if (!shader)
     {
-        shader = (eComputeShaderDx11 *)m_shaders.append(new eComputeShaderDx11);
+        shader = (eComputeShaderDx11 *)m_shaders.Append(new eComputeShaderDx11);
         shader->type = eST_CS;
         _loadShader(src, define, shader);
     }
@@ -1337,13 +1224,13 @@ eComputeShaderDx11 * eGraphicsDx11::loadComputeShader(const eChar *src, const eC
 
 void eGraphicsDx11::removeShader(eIShaderDx11 *&shader)
 {
-    const eInt index = m_shaders.find(shader);
+    const eInt index = m_shaders.Find(shader);
     if (index >= 0)
     {
         ePixelShaderDx11 *ps = (ePixelShaderDx11 *)shader; // we just have to access somehow the D3D resource
         eReleaseCom(ps->d3dPs);
         eDelete(shader);
-        m_shaders.removeAt(index);
+        m_shaders.RemoveAt(index);
     }
 }
 
@@ -1357,7 +1244,7 @@ eTexture2d * eGraphicsDx11::createChessTexture(eU32 width, eU32 height, eU32 ste
     eASSERT(height%step == 0);
 
     const eColor colors[2] = {col0, col1};
-    eArray<eColor> data(width*height);
+    eList<eColor> data(width*height);
 
     for (eU32 y=0, index=0; y<height; y++)
         for (eU32 x=0; x<width; x++)
@@ -1366,73 +1253,6 @@ eTexture2d * eGraphicsDx11::createChessTexture(eU32 width, eU32 height, eU32 ste
     eTexture2d *tex = addTexture2d(width, height, 0, eTFO_ARGB8);
     updateTexture2d(tex, &data[0]);
     return tex;
-}
-
-// callback function for Direct3D window
-static LRESULT CALLBACK wndProc(HWND hwnd, eU32 msg, WPARAM wparam, LPARAM lparam)
-{
-    static eGraphicsDx11 *gfx = nullptr;
-
-    switch (msg)
-    {
-    case WM_CREATE:
-        // pointer to graphics class passed
-        // in creation parameter
-        gfx = (eGraphicsDx11 *)(((CREATESTRUCT *)lparam)->lpCreateParams);
-        return 0;
-
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        return 0;
-
-    case WM_SIZE:
-        // window width in low, height in high word
-        gfx->resizeBackbuffer(eLoword(lparam), eHiword(lparam));
-        return 0;
-
-    case WM_KEYDOWN:
-        if (wparam == VK_ESCAPE)
-        {
-            DestroyWindow(hwnd);
-            return 0;
-        }
-        break;
-    }
-
-    return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
-ePtr eGraphicsDx11::_createWindow(eU32 width, eU32 height, eBool fullScreen)
-{
-    // register window class
-    WNDCLASS wc;
-    eMemSet(&wc, 0, sizeof(wc));
-    wc.style = CS_HREDRAW|CS_VREDRAW;
-    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wc.lpfnWndProc = wndProc;
-    wc.lpszClassName = "Enigma";
-    const ATOM res = RegisterClass(&wc);
-    eASSERT(res);
-
-    // create window
-    if (m_fullScreen)
-    {
-        return CreateWindow("Enigma", "Enigma", WS_VISIBLE|WS_POPUP, 0, 0, m_wndWidth,
-                            m_wndHeight, nullptr, nullptr, nullptr, this);
-    }
-    else
-    {
-        // adjust window rect that client area has
-        // size of desired resolution
-        RECT r;
-        r.left = r.top = 0;
-        r.right = m_wndWidth;
-        r.bottom = m_wndHeight;
-        AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW|WS_VISIBLE, FALSE);    
-
-        return CreateWindow("Enigma", "Enigma", WS_OVERLAPPEDWINDOW|WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
-                            r.right-r.left, r.bottom-r.top, nullptr, nullptr, nullptr, this);
-    }
 }
 
 void eGraphicsDx11::_createDeviceAndSwapChain()
@@ -1518,7 +1338,7 @@ void eGraphicsDx11::_createInputLayouts()
         eCallDx(m_dev->CreateInputLayout(ili.desc, ili.elements, binary->GetBufferPointer(), binary->GetBufferSize(), &il));
         eReleaseCom(vs);
 
-        m_inputLayouts.append(il);
+        m_inputLayouts.Append(il);
     }
 }
 
@@ -1564,7 +1384,7 @@ void eGraphicsDx11::_createDynamicBuffers()
     _createGeoBuffer(eTRUE,  GBS_VB_INST,  eTRUE);
 
     // initialize index buffer for quads
-    eArray<eU16> quadIb(GBE_IB_QUAD);
+    eList<eU16> quadIb(GBE_IB_QUAD);
     eU16 *ip = &quadIb[0];
 
     for (eU32 i=0, j=0; i<GBE_IB_QUAD/6; i++, j+=4)
@@ -1587,7 +1407,7 @@ void eGraphicsDx11::_createDynamicBuffers()
 
 eGeoBufferDx11 * eGraphicsDx11::_createGeoBuffer(eBool isVb, eU32 size, eBool dynamic)
 {
-    eGeoBufferDx11 *buf = m_geoBufs.append(new eGeoBufferDx11);
+    eGeoBufferDx11 *buf = m_geoBufs.Append(new eGeoBufferDx11);
     buf->isVb = isVb;
     buf->size = size;
     buf->pos = 0;
@@ -1610,7 +1430,7 @@ eGeoBufferDx11 * eGraphicsDx11::_createGeoBuffer(eBool isVb, eU32 size, eBool dy
 void eGraphicsDx11::_activateConstBuffers()
 {
     // update constant buffers
-    for (eU32 i=0; i<m_cbufs.size(); i++)
+    for (eU32 i=0; i<m_cbufs.Num(); i++)
         m_cbufs[i].inUse = eFALSE;
 
     ID3D11Buffer *cbufs[eST_COUNT][eGFX_MAXCBS];
@@ -1625,7 +1445,7 @@ void eGraphicsDx11::_activateConstBuffers()
         if (!cb)
             continue;
 
-        for (j=0; j<m_cbufs.size(); j++)
+        for (j=0; j<m_cbufs.Num(); j++)
         {
             if (!m_cbufs[j].inUse && m_cbufs[j].size == cb->size)
             {
@@ -1640,7 +1460,7 @@ void eGraphicsDx11::_activateConstBuffers()
             }
         }
 
-        if (j >= m_cbufs.size())
+        if (j >= m_cbufs.Num())
         {
             D3D11_BUFFER_DESC desc;
             eMemSet(&desc, 0, sizeof(desc));
@@ -1652,7 +1472,7 @@ void eGraphicsDx11::_activateConstBuffers()
             D3D11_SUBRESOURCE_DATA id;
             id.pSysMem = cb->dataPtr;
 
-            BufferData &bd = m_cbufs.append();
+            BufferData &bd = m_cbufs.Alloc();
             bd.size = cb->size;
             bd.inUse = eTRUE;
             eCallDx(m_dev->CreateBuffer(&desc, &id, &bd.d3dBuf));
@@ -1750,9 +1570,9 @@ void eGraphicsDx11::_activateRenderState()
     // activate depth stencil state
     if (m_rsActive.depthHash != m_rsEdit.depthHash)
     {
-        for (i=0; i<m_depthStates.size() && m_depthStates[i].hash!=m_rsEdit.depthHash; i++);
+        for (i=0; i<m_depthStates.Num() && m_depthStates[i].hash!=m_rsEdit.depthHash; i++);
 
-        if (i >= m_depthStates.size())
+        if (i >= m_depthStates.Num())
         {
             D3D11_DEPTH_STENCIL_DESC desc;
             eMemSet(&desc, 0, sizeof(desc));
@@ -1767,11 +1587,11 @@ void eGraphicsDx11::_activateRenderState()
             desc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
             desc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 
-            eStateInfoDx11 &si = m_depthStates.append();
+            eStateInfoDx11 &si = m_depthStates.Alloc();
             si.rs = m_rsEdit;
             si.hash = m_rsEdit.depthHash;
             eCallDx(m_dev->CreateDepthStencilState(&desc, &si.d3dDss));
-            i = m_depthStates.size()-1;
+            i = m_depthStates.Num()-1;
         }
 
         m_devCtx->OMSetDepthStencilState(m_depthStates[i].d3dDss, 1);
@@ -1780,9 +1600,9 @@ void eGraphicsDx11::_activateRenderState()
     // activate blend state
     if (m_rsActive.blendHash != m_rsEdit.blendHash)
     {
-        for (i=0; i<m_blendStates.size() && m_rsEdit.blendHash!=m_blendStates[i].hash; i++);
+        for (i=0; i<m_blendStates.Num() && m_rsEdit.blendHash!=m_blendStates[i].hash; i++);
 
-        if (i >= m_blendStates.size())
+        if (i >= m_blendStates.Num())
         {
             D3D11_BLEND_DESC desc;
             eMemSet(&desc, 0, sizeof(desc));
@@ -1795,11 +1615,11 @@ void eGraphicsDx11::_activateRenderState()
             desc.RenderTarget[0].DestBlendAlpha = desc.RenderTarget[0].DestBlend;
             desc.RenderTarget[0].RenderTargetWriteMask = (m_rsEdit.colorWrite ? D3D11_COLOR_WRITE_ENABLE_ALL : 0);
 
-            eStateInfoDx11 &si = m_blendStates.append();
+            eStateInfoDx11 &si = m_blendStates.Alloc();
             si.hash = m_rsEdit.blendHash;
             si.rs = m_rsEdit;
             eCallDx(m_dev->CreateBlendState(&desc, &si.d3dBs));
-            i = m_blendStates.size()-1;
+            i = m_blendStates.Num()-1;
         }
 
         const eF32 blendFactor[] = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -1814,9 +1634,9 @@ void eGraphicsDx11::_activateRenderState()
         for (eU32 j=0; j<eGFX_MAXTEX; j++)
         {
             const eInt tf = m_rsEdit.texFlags[j];
-            for (i=0; i<m_samplerStates.size() && m_samplerStates[i].hash!=tf; i++);
+            for (i=0; i<m_samplerStates.Num() && m_samplerStates[i].hash!=tf; i++);
 
-            if (i >= m_samplerStates.size())
+            if (i >= m_samplerStates.Num())
             {
                 D3D11_SAMPLER_DESC desc;
                 eMemSet(&desc, 0, sizeof(desc));
@@ -1852,11 +1672,11 @@ void eGraphicsDx11::_activateRenderState()
                     desc.ComparisonFunc = D3D11_COMPARISON_LESS;
                 }
 
-                eStateInfoDx11 &si = m_samplerStates.append();
+                eStateInfoDx11 &si = m_samplerStates.Alloc();
                 si.hash = tf;
                 si.rs = m_rsEdit;
                 eCallDx(m_dev->CreateSamplerState(&desc, &si.d3dSs));
-                i = m_samplerStates.size()-1;
+                i = m_samplerStates.Num()-1;
             }
 
             ss[j] = m_samplerStates[i].d3dSs;
@@ -1869,9 +1689,9 @@ void eGraphicsDx11::_activateRenderState()
     // activate raster state
     if (m_rsActive.rasterHash != m_rsEdit.rasterHash)
     {
-        for (i=0; i<m_rasterStates.size() && m_rasterStates[i].hash!=m_rsEdit.rasterHash; i++);
+        for (i=0; i<m_rasterStates.Num() && m_rasterStates[i].hash!=m_rsEdit.rasterHash; i++);
 
-        if (i >= m_rasterStates.size())
+        if (i >= m_rasterStates.Num())
         {
             static const eInt depthBiasVal[] = {0, 1500, -1500};
 
@@ -1883,11 +1703,11 @@ void eGraphicsDx11::_activateRenderState()
             desc.DepthClipEnable = TRUE;
             desc.ScissorEnable = m_rsEdit.scissorTest;
 
-            eStateInfoDx11 &si = m_rasterStates.append();
+            eStateInfoDx11 &si = m_rasterStates.Alloc();
             si.hash = m_rsEdit.rasterHash;
             si.rs = m_rsEdit;
             eCallDx(m_dev->CreateRasterizerState(&desc, &si.d3dRs));
-            i = m_rasterStates.size()-1;
+            i = m_rasterStates.Num()-1;
         }
 
         m_devCtx->RSSetState(m_rasterStates[i].d3dRs);
@@ -1987,7 +1807,7 @@ eIShaderDx11 * eGraphicsDx11::_findShader(const eChar *src, const eChar *define)
 {
     const eU32 hash = eHashPtr(src)^eHashPtr(define);
     
-    for (eU32 i=0; i<m_shaders.size(); i++)
+    for (eU32 i=0; i<m_shaders.Num(); i++)
         if (m_shaders[i]->hash == hash)
             return m_shaders[i];
 
@@ -2038,7 +1858,7 @@ void eGraphicsDx11::_compileShader(const eChar *src, const eChar *define, const 
 #endif
     }
 
-    data.resize(binary->GetBufferSize());
+    data.Resize(binary->GetBufferSize());
     eMemCopy(&data[0], binary->GetBufferPointer(), binary->GetBufferSize());
 }
 
@@ -2049,7 +1869,7 @@ void eGraphicsDx11::_loadShader(const eChar *src, const eChar *define, eIShaderD
 
     _compileShader(src, define, SM[shader->type], data);    
 
-    if (!data.isEmpty())
+    if (!data.IsEmpty())
     {
         shader->hash = eHashPtr(src)^eHashPtr(define);
 #ifdef eDEBUG
@@ -2062,16 +1882,16 @@ void eGraphicsDx11::_loadShader(const eChar *src, const eChar *define, eIShaderD
         switch (shader->type)
         {
         case eST_PS:
-            eCallDx(m_dev->CreatePixelShader(&data[0], data.size(), nullptr, &shader->d3dPs));
+            eCallDx(m_dev->CreatePixelShader(&data[0], data.Num(), nullptr, &shader->d3dPs));
             break;
         case eST_VS:
-            eCallDx(m_dev->CreateVertexShader(&data[0], data.size(), nullptr, &shader->d3dVs));
+            eCallDx(m_dev->CreateVertexShader(&data[0], data.Num(), nullptr, &shader->d3dVs));
             break;
         case eST_GS:
-            eCallDx(m_dev->CreateGeometryShader(&data[0], data.size(), nullptr, &shader->d3dGs));
+            eCallDx(m_dev->CreateGeometryShader(&data[0], data.Num(), nullptr, &shader->d3dGs));
             break;
         case eST_CS:
-            eCallDx(m_dev->CreateComputeShader(&data[0], data.size(), nullptr, &shader->d3dCs));
+            eCallDx(m_dev->CreateComputeShader(&data[0], data.Num(), nullptr, &shader->d3dCs));
             break;
         }
 

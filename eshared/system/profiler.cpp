@@ -66,7 +66,7 @@ void eProfilerZone::clear()
 
 void eProfilerZone::updateStats()
 {
-    eArray<eF32> &hist = m_stats.history;
+    eList<eF32> &hist = m_stats.history;
 
     hist.append(getSelfTimeMs());
     while (hist.size() >= eProfilerZoneStats::MAX_SAMPLES)
@@ -210,7 +210,7 @@ eBool eProfilerThread::_sortZonesBySelfTime(const eProfilerZone &z0, const eProf
     return (z0.getSelfTimeMs() < z1.getSelfTimeMs());
 }
 
-eArray<eProfilerThread *> eProfiler::m_threads;
+eList<eProfilerThread *> eProfiler::m_threads;
 eMutex                    eProfiler::m_mutex;
 
 void eProfiler::shutdown()

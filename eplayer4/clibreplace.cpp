@@ -13,9 +13,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "extern/Enigma/eplayer4/clibreplace.hpp"
+
+#if defined( PROUT_RELEASE ) && defined( PROUT_WIN32 )
+
 #include "extern/Enigma/eshared/system/runtime.hpp"
 
-#if defined(eRELEASE)
 // call ctors and dtors of static and global variables
 typedef void (eCDECL *ePVFV)();
 
@@ -122,19 +124,17 @@ cs20:
         }
     }
 };
-#endif
+
 
 void eGlobalsStaticsInit()
 {
-#ifdef eRELEASE
     initAtExit();
     initTerm(__xc_a, __xc_z); 
-#endif
 }
 
 void eGlobalsStaticsFree()
 {
-#ifdef eRELEASE
     doAtExit();
-#endif
 }
+
+#endif // defined( PROUT_RELEASE ) && defined( PROUT_WIN32 )

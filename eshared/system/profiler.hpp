@@ -29,7 +29,7 @@ struct eProfilerZoneStats
 {
     static const eU32               MAX_SAMPLES = 50;
 
-    eArray<eF32>                    history;
+    eList<eF32>                    history;
     eF32                            min;
     eF32                            max;
     eF32                            mean;
@@ -121,7 +121,7 @@ public:
     static const eProfilerZone *    getThreadZones(eU32 index, eU32 &numZones, eF32 &totalFrameMs, const eChar *&threadName);
 
 private:
-    static eArray<eProfilerThread*> m_threads;
+    static eList<eProfilerThread*> m_threads;
     static eMutex                   m_mutex;
 };
 

@@ -19,13 +19,13 @@
 
 eString::eString()
 {
-    m_data.append('\0');
+    m_data.Append('\0');
 }
 
 eString::eString(eChar chr)
 {
-    m_data.append(chr);
-    m_data.append('\0');
+    m_data.Append(chr);
+    m_data.Append('\0');
 }
 
 eString::eString(const eChar *str)
@@ -38,7 +38,7 @@ eString::eString(const eChar *str, eU32 length)
     passert(length > 0, "Invalid String initialisation");
 		passert(eStrLength(str) >= length, "Invalid String initialisation");
 
-    m_data.resize(length+1);
+    m_data.Resize(length+1);
     eMemCopy(&m_data[0], str, length);
 }
 
@@ -47,36 +47,37 @@ eString::eString(const eString &str)
     *this = str;
 }
 
-eU32 eString::length() const
+eU32 eString::Length() const
 {
-    return m_data.size()-1;
+    return m_data.Num()-1;
 }
 
-eBool eString::equals(const eString &str, eU32 count) const
+eBool eString::Equals(const eString &str, eU32 count) const
 {
-		passert(count <= str.length(), "You should check size before...");
+		passert(count <= str.Length(), "You should check size before...");
 
-    for (eU32 i=0; i<eMin(count, length()); i++)
+    for (eU32 i=0; i<eMin(count, Length()); i++)
         if (str[i] != m_data[i])
             return eFALSE;
 
     return eTRUE;
 }
 
-void eString::padLeft(eU32 totalLen, eChar chr)
+void eString::PadLeft(eU32 totalLen, eChar chr)
 {
-    while (length() < totalLen)
-        m_data.insert(0, chr);
+    while (Length() < totalLen) {
+        m_data.Insert(0, chr);
+		}
 }
 
-void eString::makeUpper()
+void eString::MakeUpper()
 {
     eStrUpper(&m_data[0]);
 }
 
 // Returns wether or not the given token
 // was found inside the string or not.
-eBool eString::split(eChar token, eString &left, eString &right) const
+eBool eString::Split(eChar token, eString &left, eString &right) const
 {
     left = "";
     right = "";
@@ -84,9 +85,9 @@ eBool eString::split(eChar token, eString &left, eString &right) const
     eBool found = eFALSE;
     eString *dst = &left;
 
-    for (eU32 i=0; i<length(); i++)
+    for (eU32 i=0; i< Length(); i++)
     {
-        const eChar c = at(i);
+        const eChar c = At(i);
 
         if (c == token)
         {
@@ -100,10 +101,10 @@ eBool eString::split(eChar token, eString &left, eString &right) const
     return found;
 }
 
-eString eString::subStr(eU32 startIndex, eU32 endIndex) const
+eString eString::SubStr(eU32 startIndex, eU32 endIndex) const
 {
-    passert((eInt)startIndex < (eInt)m_data.size()-1,"Invalid startIndex");
-		passert((eInt)endIndex < (eInt)m_data.size()-1, "Invalid endIndex");
+    passert((eInt)startIndex < (eInt)m_data.Num()-1,"Invalid startIndex");
+		passert((eInt)endIndex < (eInt)m_data.Num()-1, "Invalid endIndex");
 		passert(startIndex <= endIndex, "Invalid indexes");
 
     const eChar *str = c_str();
@@ -115,49 +116,50 @@ eString eString::subStr(eU32 startIndex, eU32 endIndex) const
 // and end and all white space sequences in the
 // inside of the string are replaced by just one
 // single space.
-eString eString::simplified() const
+eString eString::Simplified() const
 {
     // Remove spaces in the beginning.
     eString ts = *this;
 
-    while (ts.length() > 0 && ts[0] == ' ')
-        ts.removeAt(0);
+    while (ts.Length() > 0 && ts[0] == ' ')
+        ts.RemoveAt(0);
 
     // Remove spaces in the end.
-    while (ts.length() > 0 && ts[ts.length()-1] == ' ')
-        ts.removeAt(ts.length()-1);
+    while (ts.Length() > 0 && ts[ts.Length()-1] == ' ')
+        ts.RemoveAt(ts.Length()-1);
 
     // Remove inner spaces.
-    for (eInt i=ts.length()-1; i>0; i--)
+    for (eInt i=ts.Length()-1; i>0; i--)
         if (ts[i] == ' ' && ts[i-1] == ' ')
-            ts.removeAt(i);
+            ts.RemoveAt(i);
 
     return ts;
 }
 
 // Removes a sub-string start and ending
 // at the given indices.
-void eString::remove(eU32 startIndex, eU32 endIndex)
+void eString::Remove(eU32 startIndex, eU32 endIndex)
 {
-		passert((eInt)startIndex < (eInt)m_data.size() - 1, "Invalid startIndex");
-		passert((eInt)endIndex < (eInt)m_data.size() - 1, "Invalid endIndex");
+		passert((eInt)startIndex < (eInt)m_data.Num() - 1, "Invalid startIndex");
+		passert((eInt)endIndex < (eInt)m_data.Num() - 1, "Invalid endIndex");
 		passert(startIndex <= endIndex, "Invalid indexes");
 
-    for (eU32 i=endIndex; i>=startIndex; i--)
-        m_data.removeAt(i);
+    for (eU32 i=endIndex; i>=startIndex; i--) {
+        m_data.RemoveAt(i);
+		}
 }
 
-void eString::removeAt(eU32 index)
+void eString::RemoveAt(eU32 index)
 {
-		passert((eInt)index < (eInt)m_data.size()-1, "Invalid index");
-    remove(index, index);
+		passert((eInt)index < (eInt)m_data.Num()-1, "Invalid index");
+    Remove(index, index);
 }
 
 eString eString::operator + (const eString &str) const
 {
     eString res = *this;
 
-    for (eU32 i=0; i<str.length(); i++)
+    for (eU32 i=0; i<str.Length(); i++)
         res += str[i];
 
     return res;
@@ -165,13 +167,13 @@ eString eString::operator + (const eString &str) const
 
 eString & eString::operator += (eChar c)
 {
-    m_data.insert(m_data.size()-1, c);
+    m_data.Insert(m_data.Num()-1, c);
     return *this;
 }
 
 eString & eString::operator += (const eString &str)
 {
-    for (eU32 i=0; i<str.length(); i++)
+    for (eU32 i=0; i<str.Length(); i++)
         (*this) += str[i];
 
     return *this;
@@ -181,39 +183,39 @@ eString & eString::operator = (const eChar *str)
 {
     if (str)
     {
-        m_data.resize(eStrLength(str)+1);
-        eMemCopy(&m_data[0], str, m_data.size());
+        m_data.Resize(eStrLength(str)+1);
+        eMemCopy(&m_data[0], str, m_data.Num());
     }
     else
     {
-        m_data.resize(1);
+        m_data.Resize(1);
         m_data[0] = '\0';
     }
 
     return *this;
 }
 
-const eChar & eString::at(eU32 index) const
+const eChar & eString::At(eU32 index) const
 {
-		passert((eInt)index < (eInt)m_data.size() - 1, "Invalid index");
+		passert((eInt)index < (eInt)m_data.Num() - 1, "Invalid index");
     return m_data[index];
 }
 
-eChar & eString::at(eU32 index)
+eChar & eString::At(eU32 index)
 {
-		passert((eInt)index < (eInt)m_data.size() - 1, "Invalid index");
+		passert((eInt)index < (eInt)m_data.Num() - 1, "Invalid index");
     return m_data[index];
 }
 
 const eChar & eString::operator [] (eInt index) const
 {
-		passert((eInt)index < (eInt)m_data.size() - 1, "Invalid index");
+		passert((eInt)index < (eInt)m_data.Num() - 1, "Invalid index");
     return m_data[index];
 }
 
 eChar & eString::operator [] (eInt index)
 {
-		passert((eInt)index < (eInt)m_data.size() - 1, "Invalid index");
+		passert((eInt)index < (eInt)m_data.Num() - 1, "Invalid index");
     return m_data[index];
 }
 

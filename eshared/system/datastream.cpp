@@ -32,15 +32,15 @@ eDataStream::eDataStream(const eByteArray &data) :
     m_bitCount(0),
     m_curByte(0)
 {
-    if (!data.isEmpty())
-        attach(&data[0], data.size());
+    if (!data.IsEmpty())
+        attach(&data[0], data.Num());
 }
 
 void eDataStream::attach(eConstPtr data, eU32 size)
 {
     if (data && size)
     {
-        m_data.resize(size);
+        m_data.Resize(size);
         eMemCopy(&m_data[0], data, size);
         m_reading = eTRUE;
         m_bitCount = 8;
@@ -63,7 +63,7 @@ void eDataStream::writeBit(eBool bit, eU32 count)
 
         if (m_bitCount == 8)
         {
-            m_data.append(m_curByte);
+            m_data.Append(m_curByte);
             m_bitCount = 0;
             m_curByte = 0;
         }
@@ -123,7 +123,7 @@ void eDataStream::writeVbr(eU32 dword)
 eBool eDataStream::readBit()
 {
     passert(m_reading,"Attempt to read a write stream");
-		passert(m_readIndex <= m_data.size(), "Invalid index");
+		passert(m_readIndex <= m_data.Num(), "Invalid index");
 
     if (m_bitCount == 8)
     {
@@ -136,7 +136,7 @@ eBool eDataStream::readBit()
 
 eBool eDataStream::readBitOrZero()
 {
-    if (m_readIndex >= m_data.size() && m_bitCount >= 7)
+    if (m_readIndex >= m_data.Num() && m_bitCount >= 7)
         return 0;
     else
         return readBit();
@@ -196,7 +196,7 @@ eU32 eDataStream::readVbr()
 eByteArray eDataStream::getData() const
 {
     eByteArray finalData = m_data;
-    finalData.append(m_curByte);
+    finalData.Append(m_curByte);
     return finalData;
 }
 
@@ -207,5 +207,5 @@ eU32 eDataStream::getReadIndex() const
 
 eU32 eDataStream::getWriteIndex() const
 {
-    return m_data.size();
+    return m_data.Num();
 }

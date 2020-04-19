@@ -14,7 +14,9 @@
 
 #include "extern/Enigma/eshared/system/threading.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp" // for eDelete
+#include "system/sys_defines.h"
 #include "system/sys_assert.hpp"
+
 
 #ifdef PROUT_WIN32
 #include "platforms/win32/sys_win32.h"

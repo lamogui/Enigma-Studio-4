@@ -274,11 +274,8 @@ public:
     eGraphicsDx11();
     ~eGraphicsDx11();
 
-    void                        initialize();
     void                        shutdown();
     void                        openWindow(eU32 width, eU32 height, eInt windowFlags=0, ePtr hwnd=nullptr);
-    void                        setWindowTitle(const eString &title);
-    void                        handleMessages(eMessage &msg);
     void                        resizeBackbuffer(eU32 width, eU32 height);
     void                        clear(eInt clearMode, const eColor &col);
     void                        beginFrame();
@@ -294,10 +291,6 @@ public:
     const eRenderStats &        getRenderStats() const;
     const eEngineStats &        getEngineStats() const;
 #endif
-    eBool                       getFullScreen() const;
-    eU32                        getWndWidth() const;
-    eU32                        getWndHeight() const;
-    eSize                       getWndSize() const;
 
     void                        setMatrices(const eMatrix4x4 &modelMtx, const eMatrix4x4 &viewMtx, const eMatrix4x4 &projMtx);
     const eMatrix4x4 &          getViewMatrix() const;
@@ -314,7 +307,7 @@ public:
     void                        removeGeometry(eGeometryDx11 *&geo);
     void                        beginLoadGeometry(eGeometryDx11 *geo, eU32 vertexCount, ePtr *vertices, eU32 indexCount=0, ePtr *indices=nullptr);
     void                        endLoadGeometry(eGeometryDx11 *geo, eInt vertexCount=-1, eInt indexCount=-1);
-    void                        renderGeometry(eGeometryDx11 *geo, const eArray<eInstVtx> &insts=eArray<eInstVtx>());
+    void                        renderGeometry(eGeometryDx11 *geo, const eList<eInstVtx> &insts=eList<eInstVtx>());
 
     eTexture2dDx11 *            addTexture2d(eU32 width, eU32 height, eInt flags, eTextureFormat format);
     eTexture3dDx11 *            addTexture3d(eU32 width, eU32 height, eU32 depth, eInt flags, eTextureFormat format);
@@ -326,7 +319,7 @@ public:
     void                        updateTexture2d(eTexture2dDx11 *dst, eTexture2dDx11 *src, const ePoint &dstPos, const eRect &srcRegion);
     void                        updateTexture3d(eTexture3dDx11 *tex, eConstPtr data);
     void                        updateTextureCube(eTextureCubeDx11 *tex, eConstPtr data, eCubeMapFace face);
-    void                        readTexture2d(eTexture2dDx11 *tex, eArray<eColor> &texData) const;
+    void                        readTexture2d(eTexture2dDx11 *tex, eList<eColor> &texData) const;
 
     eUavBufferDx11 *            addUavBuffer(eU32 width, eU32 height, eTextureFormat format);
     void                        removeUavBuffer(eUavBufferDx11 *&uav);
@@ -341,7 +334,6 @@ public:
     eTexture2dDx11 *            createChessTexture(eU32 width, eU32 height, eU32 step, const eColor &col0, const eColor &col1);
 
 private:
-    ePtr                        _createWindow(eU32 width, eU32 height, eBool fullScreen);
     void                        _createDeviceAndSwapChain();
     eU32                        _getAvailableGpuMemory();
     void                        _createInputLayouts();
@@ -397,30 +389,26 @@ private:
     eBool                       m_startPull;
     eU32                        m_frameNum;
 
-    eArray<BufferData>          m_cbufs;
-    eArray<eTexture2dDx11 *>    m_texs2d;
-    eArray<eTexture3dDx11 *>    m_texs3d;
-    eArray<eTextureCubeDx11 *>  m_texsCube;
-    eArray<eUavBufferDx11 *>    m_uavBufs;
-    eArray<eGeometryDx11 *>     m_geos;
-    eArray<eGeoBufferDx11 *>    m_geoBufs;
-    eArray<eIShaderDx11 *>      m_shaders;
-    eArray<eStateInfoDx11>      m_depthStates;
-    eArray<eStateInfoDx11>      m_rasterStates;
-    eArray<eStateInfoDx11>      m_samplerStates;
-    eArray<eStateInfoDx11>      m_blendStates;
-    eArray<eRenderStateDx11>    m_rsStack;
+    eList<BufferData>          m_cbufs;
+    eList<eTexture2dDx11 *>    m_texs2d;
+    eList<eTexture3dDx11 *>    m_texs3d;
+    eList<eTextureCubeDx11 *>  m_texsCube;
+    eList<eUavBufferDx11 *>    m_uavBufs;
+    eList<eGeometryDx11 *>     m_geos;
+    eList<eGeoBufferDx11 *>    m_geoBufs;
+    eList<eIShaderDx11 *>      m_shaders;
+    eList<eStateInfoDx11>      m_depthStates;
+    eList<eStateInfoDx11>      m_rasterStates;
+    eList<eStateInfoDx11>      m_samplerStates;
+    eList<eStateInfoDx11>      m_blendStates;
+    eList<eRenderStateDx11>    m_rsStack;
     eRenderStateDx11            m_rsActive;
     eRenderStateDx11            m_rsEdit;
     eByteArray                  m_geoMapData[2];
-    eArray<eSize>               m_resolutions;
 #ifdef eEDITOR
     eRenderStats                m_renderStats;
     eEngineStats                m_engineStats;
 #endif
-    IDXGIFactory1 *             m_dxgiFactory;
-    IDXGIAdapter1 *             m_adapter;
-    IDXGIOutput *               m_adapterOutput;
     IDXGISwapChain *            m_swapChain;
     ID3D11Device *              m_dev;
     ID3D11DeviceContext *       m_devCtx;
@@ -429,13 +417,7 @@ private:
     ID3D11DepthStencilView *    m_dsvScreen;
     ID3D11DepthStencilView *    m_dsvActive;
     ID3D11RenderTargetView *    m_rtvsActive[eGFX_MAXMRT];
-    eArray<ID3D11InputLayout *> m_inputLayouts;
-    ePtr                        m_hwnd;
-    eBool                       m_ownWindow;
-    eBool                       m_fullScreen;
-    eBool                       m_vsync;
-    eU32                        m_wndWidth;
-    eU32                        m_wndHeight;
+    eList<ID3D11InputLayout *> m_inputLayouts;
     eMatrix4x4                  m_modelMtx;
     eMatrix4x4                  m_viewMtx;
     eMatrix4x4                  m_projMtx;

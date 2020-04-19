@@ -12,150 +12,150 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "extern/Enigma/eshared/system/array.hpp"
+#include "extern/Enigma/eshared/system/list.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
 
 #include "system/sys_assert.hpp"
 
-void eArrayInit(ePtrArray *a, eU32 typeSize, eU32 size)
+void ePtrListInit(ePtrList *a, eU32 typeSize, eU32 size)
 {
     passert(typeSize > 0, "Invalid typeSize");
 
     a->m_data = nullptr;
-    a->m_size = 0;
+    a->m_num = 0;
     a->m_capacity = 0;
     a->m_typeSize = typeSize;
 
     if (size > 0)
-        eArrayResize(a, size);
+        ePtrListResize(a, size);
 }
 
-void eArrayCopy(ePtrArray *a, const ePtrArray *ta)
+void ePtrListCopy(ePtrList *a, const ePtrList *ta)
 {
     a->m_typeSize = ta->m_typeSize;
-    eArrayReserve(a, ta->m_capacity);
-    a->m_size = ta->m_size;
+    ePtrListReserve(a, ta->m_capacity);
+    a->m_num = ta->m_num;
 
-    if (ta->m_size)
-        eMemCopy(a->m_data, ta->m_data, ta->m_size*ta->m_typeSize);
+    if (ta->m_num)
+        eMemCopy(a->m_data, ta->m_data, ta->m_num*ta->m_typeSize);
 }
 
-void eArrayClear(ePtrArray *a)
+void ePtrListClear(ePtrList *a)
 {
-    a->m_size = 0;
+    a->m_num = 0;
 }
 
-void eArrayFree(ePtrArray *a)
+void ePtrListFree(ePtrList *a)
 {
     eFreeAligned(a->m_data);
     a->m_data = nullptr;
-    a->m_size = 0;
+    a->m_num = 0;
     a->m_capacity = 0;
 }
 
-void eArrayReserve(ePtrArray *a, eU32 capacity)
+void ePtrListReserve(ePtrList *a, eU32 capacity)
 {
     if (!capacity)
-        eArrayClear(a);
+        ePtrListClear(a);
     else if (a->m_capacity < capacity)
     {
         eU8 *temp = (eU8 *)eAllocAlignedAndZero(capacity*a->m_typeSize, 16);
-        passert(temp != nullptr, "Failed to allocate memory for eArray");
+        passert(temp != nullptr, "Failed to allocate memory for eList");
         eU32 newSize = 0;
 
         if (a->m_data)
         {
-            newSize = eMin(a->m_size, capacity);
+            newSize = eMin(a->m_num, capacity);
             eMemCopy(temp, a->m_data, newSize*a->m_typeSize);
             eFreeAligned(a->m_data);
             a->m_data = nullptr;
         }
 
         a->m_data = (ePtr *)temp;
-        a->m_size = newSize;
+        a->m_num = newSize;
         a->m_capacity = capacity;
     }
 }
 
-void eArrayResize(ePtrArray *a, eU32 size)
+void ePtrListResize(ePtrList *a, eU32 size)
 {
     if (size > a->m_capacity)
-        eArrayReserve(a, size);
+        ePtrListReserve(a, size);
 
-    a->m_size = size;
+    a->m_num = size;
 }
 
-ePtr eArrayAppend(ePtrArray *a)
+ePtr ePtrListAppend(ePtrList *a)
 {
-    if (a->m_size >= a->m_capacity)
+    if (a->m_num >= a->m_capacity)
     {
         const eU32 newCapacity = (a->m_capacity > 0 ? a->m_capacity*2 : 32);
-        eArrayReserve(a, newCapacity);
+        ePtrListReserve(a, newCapacity);
     }
 
-    ePtr res = ((eU8 *)a->m_data)+a->m_size*a->m_typeSize;  
-    a->m_size++;
+    ePtr res = ((eU8 *)a->m_data)+a->m_num*a->m_typeSize;  
+    a->m_num++;
     return res;
 }
 
-void eArrayInsert(ePtrArray *a, eU32 index, const ePtr data)
+void ePtrListInsert(ePtrList *a, eU32 index, const ePtr data)
 {
-    passert(index <= a->m_size, "Invalid index");
+    passert(index <= a->m_num, "Invalid index");
 
-    if (a->m_size >= a->m_capacity)
+    if (a->m_num >= a->m_capacity)
     {
         const eU32 newCapacity = (a->m_capacity > 0 ? a->m_capacity*2 : 32);
-        eArrayReserve(a, newCapacity);
+        ePtrListReserve(a, newCapacity);
     }
 
     eMemMove(((eU8 *)a->m_data)+(index+1)*a->m_typeSize,
              ((eU8 *)a->m_data)+index*a->m_typeSize,
-             (a->m_size-index)*a->m_typeSize);
+             (a->m_num-index)*a->m_typeSize);
 
     eMemCopy(((eU8 *)a->m_data)+index*a->m_typeSize, data, a->m_typeSize);
-    a->m_size++;
+    a->m_num++;
 }
 
-void eArrayRemoveAt(ePtrArray *a, eU32 index)
+void ePtrListRemoveAt(ePtrList *a, eU32 index)
 {
-    passert(index < a->m_size, "Invalid index");
+    passert(index < a->m_num, "Invalid index");
 
     eMemMove(((eU8 *)a->m_data)+index*a->m_typeSize,
              ((eU8 *)a->m_data)+(index+1)*a->m_typeSize,
-             (a->m_size-index-1)*a->m_typeSize);
+             (a->m_num-index-1)*a->m_typeSize);
 
-    a->m_size--;
+    a->m_num--;
 }
 
-void eArrayRemoveSwap(ePtrArray *a, eU32 index)
+void ePtrListRemoveSwap(ePtrList *a, eU32 index)
 {
-    passert(index < a->m_size, "Invalid index" );
+    passert(index < a->m_num, "Invalid index" );
 
-    if (index < a->m_size-1)
+    if (index < a->m_num-1)
     {
         eMemCopy(((eU8 *)a->m_data)+index*a->m_typeSize,
-                 ((eU8 *)a->m_data)+(a->m_size-1)*a->m_typeSize,
+                 ((eU8 *)a->m_data)+(a->m_num-1)*a->m_typeSize,
                  a->m_typeSize);
     }
    
-    a->m_size--;
+    a->m_num--;
 }
 
-eInt eArrayFind(const ePtrArray *a, const ePtr data)
+eInt ePtrListFind(const ePtrList *a, const ePtr data)
 {
-    for (eU32 i=0, index=0; i<a->size(); i++, index+=a->m_typeSize)
+    for (eU32 i=0, index=0; i<a->Num(); i++, index+=a->m_typeSize)
         if (eMemEqual(((eU8 *)a->m_data)+index, data, a->m_typeSize))
             return i;
 
     return -1;
 }
 
-eBool eArrayEqual(const ePtrArray *a0, const ePtrArray *a1)
+eBool ePtrListEqual(const ePtrList *a0, const ePtrList *a1)
 {
-    if (a0->size() != a1->size())
+    if (a0->Num() != a1->Num())
         return eFALSE;
-    else if (a0->m_size == 0) // => both empty because of first condition
+    else if (a0->m_num == 0) // => both empty because of first condition
         return eTRUE;
     else
-        return eMemEqual(a0->m_data, a1->m_data, a0->size()*a0->m_typeSize);
+        return eMemEqual(a0->m_data, a1->m_data, a0->Num()*a0->m_typeSize);
 }
