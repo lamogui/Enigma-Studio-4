@@ -235,7 +235,7 @@ eBool eShowAssertion(const eChar *expr, const eChar *file, eU32 line)
 
 void eShowError(const eChar *error)
 {
-    MessageBox(nullptr, error, "Enigma - Error", MB_TASKMODAL|MB_ICONERROR);
+    MessageBox(nullptr, error, "Error", MB_TASKMODAL|MB_ICONERROR);
 }
 
 void eFatal(eU32 exitCode)

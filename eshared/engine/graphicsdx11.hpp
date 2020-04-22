@@ -13,6 +13,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #pragma once
+#if 0
 #include "renderbase/renderbase_defines.h"
 
 #ifdef PROUT_D3D11
@@ -285,8 +286,6 @@ public:
     void                        reloadEditedShaders();
 #endif
 
-    eU32                        getResolutionCount() const;
-    const eSize &               getResolution(eU32 index) const;
 #ifdef eEDITOR
     const eRenderStats &        getRenderStats() const;
     const eEngineStats &        getEngineStats() const;
@@ -453,3 +452,4 @@ public:
 
 
 #endif // PROUT_D3D11
+#endif // 0

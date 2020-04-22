@@ -12,6 +12,7 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#if 0
 #define NOMINMAX
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -1900,3 +1901,4 @@ void eGraphicsDx11::_loadShader(const eChar *src, const eChar *define, eIShaderD
             *shader = oldShader;
     }
 }
+#endif // 0
