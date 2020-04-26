@@ -1259,7 +1259,7 @@ static eChar * eStrChr( const eChar * _s, eInt _c )
 	}
 }
 
-static int eStrNCompare( const eChar * _s1, const eChar * _s2, register size_t _n )
+int eStrNCompare( const eChar * _s1, const eChar * _s2, register size_t _n )
 {
 	register unsigned char u1, u2;
 

@@ -177,6 +177,7 @@ eF64	eAToF( const eChar * _str );
 eInt	eMemCompare( const void * _s1, const void * _s2, eInt _n );
 void *	eMemChr( register const void * _src_void, int _c, size_t _length );
 eChar	eToUpper( eChar _c );
+int eStrNCompare(const eChar * _s1, const eChar * _s2, register size_t _n);
 eChar * eStrStr( const eChar * s1, const eChar * s2 );
 eBool	eIsSpace( eChar c );
 
