@@ -54,7 +54,7 @@ struct IDXGISwapChain;
 //   debug: load text shaders from file (for live editing),
 // release: load binary shaders from arrays (for size)
 
-#define eSHADERCONTENT(name, suffix)           eString(eTOKENPASTE(name, _hlsl##suffix))
+#define eSHADERCONTENT(name, suffix)           eStr(eTOKENPASTE(name, _hlsl##suffix))
 
 #ifdef eDEBUG
 #define eSHADER(name)           "../code/eshared/engine/shaders/"#name".hlsl"
@@ -141,8 +141,8 @@ struct eIShaderDx11
     eShaderType                 type;
     eU32                        hash;
 #ifdef eDEBUG
-    eString                     define;
-    eString                     filePath;
+    eStr                     define;
+    eStr                     filePath;
     eS64                        lastTime;
 #endif
 

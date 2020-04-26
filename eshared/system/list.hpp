@@ -253,6 +253,11 @@ public:
         return !(*this == a);
     }
 
+		eFORCEINLINE const T * Ptr() const
+		{
+			return m_data;
+		}
+
 public:
     T *     m_data;
     eU32    m_num;

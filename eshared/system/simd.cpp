@@ -14,6 +14,7 @@
 
 #include "extern/Enigma/eshared/system/simd.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
+#include "system/sys_assert.hpp"
 
 // DZ   bit 6 = 1       denormals are zero
 // FZ   bit 15 = 1      flush to zero
@@ -21,6 +22,7 @@
 // R-   bit 13 = 1      round negative
 // RZ   bits 13&14 = 1  round to zero
 // RN   bits 13&14 = 0  round to nearest
+
 void eSimdSetArithmeticFlags(eInt flags)
 {
     // default control register value

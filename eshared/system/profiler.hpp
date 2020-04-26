@@ -42,14 +42,14 @@ class eProfilerZone
 {
 public:
     eProfilerZone();
-    eProfilerZone(const eString &name);
+    eProfilerZone(const eStr &name);
 
     void                            enter(eProfilerZone *lastZone);
     void                            leave(eProfilerZone *nextZone);
     void                            clear();
     void                            updateStats();
 
-    const eString &                 getName() const;
+    const eStr &                 getName() const;
     eColor                          getColor() const;
     eU64                            getSelfTicks() const;
     eU64                            getHierTicks() const;
@@ -59,7 +59,7 @@ public:
     const eProfilerZoneStats &      getStatistics() const;
 
 private:
-    eString                         m_name;
+    eStr                         m_name;
     eColor                          m_color;
     eU64                            m_selfTotal;
     eU64                            m_hierTotal;
@@ -75,7 +75,7 @@ private:
 class eProfilerThread
 {
 public:
-    eProfilerThread(const eString &name, eThreadCtx &ctx);
+    eProfilerThread(const eStr &name, eThreadCtx &ctx);
 
     void                            beginFrame();
     void                            endFrame();
@@ -85,7 +85,7 @@ public:
 
     const eProfilerZone *           getLastZones(eU32 &numZones) const;
     eU32                            getThreadId() const;
-    const eString &                 getThreadName() const;
+    const eStr &                 getThreadName() const;
 
 private:
     static eBool                    _sortZonesBySelfTime(const eProfilerZone &z0, const eProfilerZone &z1);
@@ -101,7 +101,7 @@ private:
     eU32                            m_zoneCount;
     eProfilerZone                   m_lastZonesByIndex[MAX_ZONE_COUNT];
     eU32                            m_lastZoneCount;
-    const eString                   m_name;
+    const eStr                   m_name;
     const eThreadCtx &              m_threadCtx;
 };
 
@@ -112,8 +112,8 @@ class eProfiler
 
 public:
     static void                     shutdown();
-    static void                     addThread(eThreadCtx &ctx, const eString &name);
-    static void                     addThisThread(const eString &name);
+    static void                     addThread(eThreadCtx &ctx, const eStr &name);
+    static void                     addThisThread(const eStr &name);
     static void                     beginThreadFrame();
     static void                     endThreadFrame();
     

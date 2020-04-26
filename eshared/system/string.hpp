@@ -43,43 +43,74 @@ template<eU32 N> eU32 eHashStr(const eChar (&str)[N])
     return eFnvHash<N, N>::hash(str);
 }
 
+void    eStrClear(eChar *str);
+void    eStrCopy(eChar *dst, const eChar *src);
+eInt		eStrPtrNCopy( eChar * _buffer, int _bufferSize, const eChar * _start, const eChar * _end );
+void    eStrNCopy(eChar *dst, const eChar *src, eU32 count);
+eChar * eStrClone(const eChar *str);
+eU32    eStrLength(const eChar *str);
+eChar * eStrAppend(eChar *dst, const eChar *src);
+eInt    eStrCompare(const eChar *str0, const eChar *str1);
+eInt    eStrICompare(const eChar *str0, const eChar *str1);
+eChar * eStrUpper(eChar *str);
+eChar * eIntToStr(eInt val);
+eChar * eFloatToStr(eF32 val);
+eInt    eStrToInt(const eChar *_str, const char ** _end = nullptr );
+eU64		eStrToHex( const eChar * _str, const char ** _end = nullptr );
+eF64    eStrToFloat(const eChar *str, const char ** _end = nullptr);
+eBool   eIsAlphaNumeric(eChar c);
+eBool   eIsDigit(eChar c);
+eBool   eIsAlpha(eChar c);
+
+#ifdef PROUT_IMGUI
+eChar	eToUpper(eChar _c);
+int eStrNCompare(const eChar * _s1, const eChar * _s2, register size_t _n);
+eChar * eStrStr(const eChar * s1, const eChar * s2);
+eBool	eIsSpace(eChar c);
+
+#endif // PROUT_IMGUI
+
 // dynamic string class
-class eString
+class eStr
 {
 public:
-    eString();
-    eString(eChar chr);
-    eString(const eChar *str);
-    eString(const eChar *str, eU32 length);
-    eString(const eString &str);
+    eStr();
+    eStr(eChar chr);
+    eStr(const eChar *str);
+    eStr(const eChar *str, eU32 length);
+    eStr(const eStr &str);
 
     eU32            Length() const;
-    eBool           Equals(const eString &str, eU32 count) const;
+    eBool           Equals(const eStr &str, eU32 count) const;
 
     void            PadLeft(eU32 totalLen, eChar chr);
     void            MakeUpper();
-    eBool           Split(eChar token, eString &left, eString &right) const;
-    eString         SubStr(eU32 startIndex, eU32 endIndex) const;
-    eString         Simplified() const;
+    eBool           Split(eChar token, eStr &left, eStr &right) const;
+    eStr         SubStr(eU32 startIndex, eU32 endIndex) const;
+    eStr         Simplified() const;
     void            Remove(eU32 startIndex, eU32 endIndex);
     void            RemoveAt(eU32 index);
 
-    eString         operator + (const eString &str) const;
-    eString &       operator += (eChar c);
-    eString &       operator += (const eString &str);
-    eString &       operator = (const eChar *str);
+    eStr         operator + (const eStr &str) const;
+    eStr &       operator += (eChar c);
+    eStr &       operator += (const eStr &str);
+    eStr &       operator = (const eChar *str);
 
     const eChar &   At(eU32 index) const;
     eChar &         At(eU32 index);
     const eChar &   operator [] (eInt index) const;
     eChar &         operator [] (eInt index);
 
-    eBool           operator == (const eString &str) const;
+    eBool           operator == (const eStr &str) const;
     eBool           operator == (const eChar *str) const;
-    eBool           operator != (const eString &str) const;
+    eBool           operator != (const eStr &str) const;
     eBool           operator != (const eChar *str) const;
 
-	const eChar *	c_str() const;
+		const eChar *	c_str() const;
+
+		inline static eInt Cmp( const char * _s1, const char * _s2 ) { return eStrCompare( _s1, _s2 ); }
+		inline static eInt Icmp( const char * _s1, const char * _s2 ) { return eStrICompare( _s1, _s2 ); }
+		inline eInt Icmp( const char * _other ) const { return eStrICompare( m_data.Ptr(), _other ); }
 
 private:
     eList<eChar>   m_data;

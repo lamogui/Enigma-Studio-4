@@ -16,6 +16,7 @@
 #include "extern/Enigma/eshared/math/vector.hpp"
 #include "extern/Enigma/eshared/math/matrix.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
+#include "system/sys_assert.hpp"
 
 eQuat::eQuat() : x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 {

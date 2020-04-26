@@ -17,6 +17,7 @@
 #if defined( PROUT_RELEASE ) && defined( PROUT_WIN32 )
 
 #include "extern/Enigma/eshared/system/runtime.hpp"
+#include "system/sys_assert.hpp"
 
 // call ctors and dtors of static and global variables
 typedef void (eCDECL *ePVFV)();

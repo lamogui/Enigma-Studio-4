@@ -17,6 +17,7 @@
 #include "extern/Enigma/eshared/math/plane.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
 #include "extern/Enigma/eshared/system/simd.hpp"
+#include "system/sys_assert.hpp"
 
 eVector2::eVector2()
 {

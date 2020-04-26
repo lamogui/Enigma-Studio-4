@@ -20,7 +20,7 @@ eProfilerZone::eProfilerZone()
 {
 }
 
-eProfilerZone::eProfilerZone(const eString &name) :
+eProfilerZone::eProfilerZone(const eStr &name) :
     m_name(name),
     m_selfTotal(0),
     m_hierTotal(0),
@@ -94,7 +94,7 @@ void eProfilerZone::updateStats()
     m_stats.stdDev = (hist.size() > 1 ? eSqrt(var/(eF32)(hist.size()-1)) : 0.0f);
 }
 
-const eString & eProfilerZone::getName() const
+const eStr & eProfilerZone::getName() const
 {
     return m_name;
 }
@@ -134,7 +134,7 @@ const eProfilerZoneStats & eProfilerZone::getStatistics() const
     return m_stats;
 }
 
-eProfilerThread::eProfilerThread(const eString &name, eThreadCtx &ctx) :
+eProfilerThread::eProfilerThread(const eStr &name, eThreadCtx &ctx) :
     m_name(name),
     m_stackIndex(0),
     m_zoneCount(0),
@@ -200,7 +200,7 @@ eU32 eProfilerThread::getThreadId() const
     return m_threadCtx.tid;
 }
 
-const eString & eProfilerThread::getThreadName() const
+const eStr & eProfilerThread::getThreadName() const
 {
     return m_name;
 }
@@ -223,12 +223,12 @@ void eProfiler::shutdown()
     m_threads.clear();
 }
 
-void eProfiler::addThisThread(const eString &name)
+void eProfiler::addThisThread(const eStr &name)
 {
     addThread(eThread::getThisContext(), name);
 }
 
-void eProfiler::addThread(eThreadCtx &ctx, const eString &name)
+void eProfiler::addThread(eThreadCtx &ctx, const eStr &name)
 {
     eScopedLock lock(m_mutex);
 

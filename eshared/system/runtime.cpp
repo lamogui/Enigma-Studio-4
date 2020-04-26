@@ -17,18 +17,17 @@
 #ifdef PROUT_WIN32
 #include "platforms/win32/sys_win32.h"
 #endif // PROUT_WIN32
-
+#include "system/sys_assert.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
 
-#if 1 //defined(eRELEASE) && defined(ePLAYER)
 ePtr eCDECL operator new(eU32 size)
 {
-    return HeapAlloc(GetProcessHeap(), 0, size);
+	return HeapAlloc(GetProcessHeap(), 0, size);
 }
 
 ePtr eCDECL operator new [] (eU32 size)
 {
-    return HeapAlloc(GetProcessHeap(), 0, size);
+	return HeapAlloc(GetProcessHeap(), 0, size);
 }
 
 void eCDECL operator delete(ePtr ptr)
@@ -38,7 +37,7 @@ void eCDECL operator delete(ePtr ptr)
 
 void eCDECL operator delete(ePtr ptr, unsigned int)
 {
-    HeapFree(GetProcessHeap(), 0, ptr);
+	HeapFree(GetProcessHeap(), 0, ptr);
 }
 
 void eCDECL operator delete [](ePtr ptr)
@@ -48,77 +47,8 @@ void eCDECL operator delete [](ePtr ptr)
 
 void eCDECL operator delete [] (ePtr ptr, unsigned int)
 {
-    HeapFree(GetProcessHeap(), 0, ptr);
+	HeapFree(GetProcessHeap(), 0, ptr);
 }
-#else
-#undef new
-#undef delete
-#include <crtdbg.h>
-#include <malloc.h>
-#undef new
-#undef delete
-
-static eU64 g_allocedMem = 0;
-static eU64 g_allocCount = 0;
-
-ePtr operator new(eU32 size, const eChar *file, eU32 line)
-{
-#ifdef eDEBUG
-    ePtr ptr = _malloc_dbg(size, _NORMAL_BLOCK, file, line);
-#else
-    ePtr ptr = malloc(size);
-#endif
-
-#ifdef eEDITOR
-    g_allocedMem += _msize(ptr);
-    g_allocCount++;
-#endif
-
-    return ptr;
-}
-
-ePtr eCDECL operator new [] (eU32 size, const eChar *file, eU32 line)
-{
-    return ::operator new(size, file, line);
-}
-
-ePtr eCDECL operator new(eU32 size)
-{
-    return ::operator new(size, "", 0);
-}
-
-void eCDECL operator delete(ePtr ptr)
-{
-    if (!ptr)
-        return;
-
-#ifdef eEDITOR
-    g_allocedMem -= _msize(ptr);
-    g_allocCount--;
-#endif
-
-#ifdef eDEBUG
-    _free_dbg(ptr, _NORMAL_BLOCK);
-#else
-    free(ptr);
-#endif
-}
-
-void eCDECL operator delete [] (ePtr ptr)
-{
-    ::operator delete(ptr);
-}
-
-void eCDECL operator delete (ePtr ptr, const eChar *file, eU32 line)
-{
-    ::operator delete [] (ptr);
-}
-
-void eCDECL operator delete [] (ePtr ptr, const eChar *file, eU32 line)
-{
-    ::operator delete(ptr);
-}
-#endif
 
 ePtr eAllocAlignedAndZero(eU32 size, eU32 alignment)
 {
@@ -146,28 +76,6 @@ void eFreeAligned(ePtr ptr)
     }
 }
 
-#ifndef ePLAYER
-eLogHandler g_logHandler = nullptr;
-ePtr g_logHandlerParam = nullptr;
-
-void eSetLogHandler(eLogHandler logHandler, ePtr param)
-{
-    g_logHandler = logHandler;
-    g_logHandlerParam = param;
-}
-#endif
-
-void eWriteToLog(const eChar *msg)
-{
-#ifdef eEDITOR
-    if (g_logHandler)
-        g_logHandler(msg, g_logHandlerParam);
-#endif
-
-	// always output message to console
-    OutputDebugString(msg);
-    OutputDebugString("\n");
-}
 
 /*
 #ifndef ePLAYER
@@ -365,199 +273,7 @@ eBool eMemEqual(eConstPtr mem0, eConstPtr mem1, eU32 count)
     return eTRUE;
 }
 
-void eStrClear(eChar *str)
-{
-    str[0] = '\0';
-}
 
-void eStrCopy(eChar *dst, const eChar *src)
-{
-    while (*dst++ = *src++);
-}
-
-void eStrNCopy(eChar *dst, const eChar *src, eU32 count)
-{
-    // copy string characters
-    while (count && (*dst++ = *src++))
-        count--;
-
-    // pad out with zeros
-    if (count)
-        eMemSet(dst, '\0', count-1);
-}
-
-eChar * eStrClone(const eChar *str)
-{
-    eChar *clone = new eChar[eStrLength(str)+1];
-    eStrCopy(clone, str);
-    return clone;
-}
-
-eU32 eStrLength(const eChar *str)
-{
-    const eChar *eos = str;
-    while (*eos++);
-    return (eU32)(eos-str-1);
-}
-
-eChar * eStrAppend(eChar *dst, const eChar *src)
-{
-    // find end of source string
-    eChar *pd = dst;
-
-    while (*pd)
-        pd++;
-
-    eStrCopy(pd, src);
-    return dst;
-}
-
-// compares two strings and returns an integer to
-// indicate whether the first is less than the second,
-// the two are equal, or whether the first is greater
-// than the second. comparison is done byte by byte on
-// an unsigned basis which is to say that null (0) is
-// less than any other character (1-255).
-//
-// returns -1 if first string < second string.
-// returns  0 if first string = second string.
-// returns +1 if first string > second string.
-eInt eStrCompare(const eChar *str0, const eChar *str1)
-{
-    eInt res = 0;
-
-    while (!(res = *(eU8 *)str0-*(eU8 *)str1) && *str1)
-    {
-        str0++;
-        str1++;
-    }
-
-    if (res < 0)
-        res = -1;
-    else if (res > 0)
-        res = 1;
-
-    return res;
-}
-
-eChar * eStrUpper(eChar *str)
-{
-    const eU32 strLen = eStrLength(str);
-    for (eU32 i=0; i<strLen; i++)
-    {
-        eChar &c = str[i];
-        if (c >= 'a' && c <= 'z')
-            c -= 32;
-    }
-
-    return str;
-}
-
-eChar * eIntToStr(eInt val)
-{
-    // remember if integer is negative and
-    // if it is, make it positive
-    const eBool negative = (val < 0);
-
-    if (negative)
-        val = -val;
-
-    // 12 spaces are enough for 32-bit decimal
-    // (10 digits + 1 null terminator byte +
-    // eventually a sign character)
-    static eChar str[12];
-
-    eChar *cp = str+sizeof(str)-1;
-    *cp = '\0';
-
-    do
-    {
-        *(--cp) = val%10+'0';
-        val /= 10;
-    }
-    while (val > 0);
-
-    // prepend negative sign character
-    if (negative)
-        *(--cp) = '-';
-
-    return cp; 
-}
-
-#if !defined(ePLAYER) || !defined(eRELEASE)
-#include <sstream>
-
-eChar * eFloatToStr(eF32 val)
-{
-    static eChar str[20];
-    std::ostringstream ss;
-    ss << val;
-    eStrCopy(str, ss.str().c_str());
-    return str;
-}
-#endif
-
-eInt eStrToInt(const eChar *str)
-{
-    eASSERT(eStrLength(str) > 0);
-
-    const eBool neg = (str[0] == '-');
-    eChar c;
-    eInt val = 0;
-
-    while ((c = *str++) != '\0' && eIsDigit(c))
-        val = val*10+(c-'0');
-
-    return (neg ? -val : val);
-}
-
-eF32 eStrToFloat(const eChar *str)
-{
-    eASSERT(eStrLength(str) > 0);
-
-    eF32 val = 0.0f;
-    eInt sign = 1;
-
-    if (*str == '+')
-        str++;
-    else if (*str == '-')
-    {
-        sign = -1;
-        str++;
-    }
-
-    while (eIsDigit(*str))
-        val = val*10+(*str++)-'0';
-
-    if (*str == '.')
-    {
-        str++;
-        eF32 dec = 1.0f;
-
-        while (eIsDigit(*str))
-        {
-            dec = dec/10.0f;
-            val = val+((*str++)-'0')*dec;
-        }
-    }
-
-    return val*sign;
-}
-
-eBool eIsAlphaNumeric(eChar c)
-{
-	return eIsAlpha(c) || eIsDigit(c);
-}
-
-eBool eIsAlpha(eChar c)
-{
-    return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
-}
-
-eBool eIsDigit(eChar c)
-{
-    return (c >= '0' && c <= '9');
-}
 
 // seed value of the random number generator
 static eU32 g_seed = 1;
@@ -1184,123 +900,31 @@ eBool eClosedIntervalsOverlap(eInt start0, eInt end0, eInt start1, eInt end1)
 }
 
 #ifdef PROUT_IMGUI
-eF64 eAToF( const eChar * _str )
+
+eInt eMemCompare(const void * _s1, const void * _s2, eInt _n)
 {
-	bool neg = false;
-	if ( *_str == '-' ) {
-		neg = true;
-		++_str;
-	} else if ( *_str == '+' ) {
-		++_str;
-	}
+	register const unsigned char *s1 = (const unsigned char*)_s1;
+	register const unsigned char *s2 = (const unsigned char*)_s2;
 
-	double value = 0;
-	for ( ; *_str != '.'; ++_str ) {
-		if ( !*_str ) {
-			return neg ? -value : value;
-		}
-		value *= 10;
-		value += *_str - '0';
-	}
-
-	double decimal = 0, weight = 1;
-	for ( ; *++_str; weight *= 10 ) {
-		decimal *= 10;
-		decimal += *_str - '0';
-	}
-	decimal /= weight;
-	return neg ? -(value + decimal) : (value + decimal);
-}
-
-eInt eMemCompare( const void * _s1, const void * _s2, eInt _n )
-{
-	register const unsigned char *s1 = ( const unsigned char* )_s1;
-	register const unsigned char *s2 = ( const unsigned char* )_s2;
-
-	while ( _n-- > 0 )
+	while (_n-- > 0)
 	{
-		if ( *s1++ != *s2++ )
-			return s1[ -1 ] < s2[ -1 ] ? -1 : 1;
+		if (*s1++ != *s2++)
+			return s1[-1] < s2[-1] ? -1 : 1;
 	}
 	return 0;
 }
 
-void * eMemChr( register const void * _src_void, int _c, size_t _length )
+void * eMemChr(register const void * _src_void, int _c, size_t _length)
 {
-	const unsigned char *src = ( const unsigned char * )_src_void;
+	const unsigned char *src = (const unsigned char *)_src_void;
 
-	while ( _length-- > 0 )
+	while (_length-- > 0)
 	{
-		if ( *src == _c )
-			return ( void * )src;
+		if (*src == _c)
+			return (void *)src;
 		src++;
 	}
 	return nullptr;
-}
-
-eChar eToUpper( eChar _c )
-{
-	if ( _c >= 'a' && _c <= 'z' ) {
-		_c -= 32;
-	}
-	return _c;
-}
-
-static eChar * eStrChr( const eChar * _s, eInt _c )
-{
-	while ( _s[ 0 ] != _c && _s[ 0 ] != '\0' ) {
-		_s++;
-	}
-	if ( _s[ 0 ] == '\0' ) {
-		return nullptr;
-	}
-	else {
-		return ( eChar * )_s;
-	}
-}
-
-int eStrNCompare( const eChar * _s1, const eChar * _s2, register size_t _n )
-{
-	register unsigned char u1, u2;
-
-	while ( _n-- > 0 )
-	{
-		u1 = ( unsigned char )*_s1++;
-		u2 = ( unsigned char )*_s2++;
-		if ( u1 != u2 )
-			return u1 - u2;
-		if ( u1 == '\0' )
-			return 0;
-	}
-	return 0;
-}
-
-eChar * eStrStr( const eChar * _s1, const eChar * _s2 )
-{
-	const char *p = _s1;
-	const size_t len = eStrLength( _s2 );
-
-	for ( ; (p = eStrChr( p, *_s2 )) != 0; p++ )
-	{
-		if ( eStrNCompare( p, _s2, len ) == 0 ) {
-			return ( char * )p;
-		}
-	}
-	return (0);
-}
-
-eBool eIsSpace( eChar _c ) {
-	switch ( _c ){
-		case '\t':
-		case '\n':
-		case '\v':
-		case '\f':
-		case '\r':
-			return true;
-		default:
-			return false;
-	}
-	
 }
 
 #endif // PROUT_IMGUI

@@ -1849,7 +1849,7 @@ void eGraphicsDx11::_compileShader(const eChar *src, const eChar *define, const 
             eShowError((eChar *)errMsg->GetBufferPointer());
 		}
         else
-            eShowError((eString("Couldn't load shader \"")+src+"\"!").c_str());
+            eShowError((eStr("Couldn't load shader \"")+src+"\"!").c_str());
 
 
 #ifdef eDEBUG

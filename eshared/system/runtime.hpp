@@ -14,6 +14,7 @@
 
 #pragma once
 #include "extern/Enigma/eshared/system/types.hpp"
+
 // global constants (don't change into
 // constants, it's a size thing!)
 
@@ -34,62 +35,20 @@
 #define eELEMENT_COUNT(a)    (sizeof(a)/sizeof(a[0]))
 #define eASSERT_ALIGNED16(x) eASSERT(eU32(x)%16 == 0)
 
-#ifdef eDEBUG
-    #define eASSERT(expr)                                   \
-    {                                                       \
-        if (!(expr))                                        \
-            if (eShowAssertion(#expr, __FILE__, __LINE__))  \
-                __asm int 3                                 \
-    }
-#else   
-    #define eASSERT(x)
-#endif
+#define eASSERT(x) passert( x, "Enigma Assert" )
 
 // overloaded new and delete operators. WinAPI
 // versions for release build and memory tracking
 // versions for debug build.
-#if 1 //defined(eRELEASE) && defined(ePLAYER)
-    ePtr eCDECL operator new(eU32 size);
-    ePtr eCDECL operator new [] (eU32 size);
-    void eCDECL operator delete(ePtr ptr);
-    void eCDECL operator delete [] (ePtr ptr);
-#else
-    // warning: assumption here is that if there is a
-    // symbol multiply defined in an .obj and a .lib
-    // file, the compiler uses the symbol from the
-    // .obj file. this is especially important when
-    // externally linking 3rd-party libraries
-    #undef new
-
-    ePtr eCDECL operator new(eU32 size, const eChar *file, eU32 line);
-    ePtr eCDECL operator new [] (eU32 size, const eChar *file, eU32 line);
-    ePtr eCDECL operator new(eU32 size);
-
-    void eCDECL operator delete(ePtr ptr);
-    void eCDECL operator delete [] (ePtr ptr);
-
-    // also overloaded delete operators to assure
-    // that memory is freed when initialization
-    // throws an exception
-    void eCDECL operator delete (ePtr ptr, const eChar *file, eU32 line);
-    void eCDECL operator delete [] (ePtr ptr, const eChar *file, eU32 line);
-
-    #define new new(__FILE__, __LINE__)
-#endif
+ePtr eCDECL operator new(eU32 size);
+ePtr eCDECL operator new [] (eU32 size);
+void eCDECL operator delete(ePtr ptr);
+void eCDECL operator delete [] (ePtr ptr);
 
 #define eALLOC_STACK(type, count)  ((type *)_alloca((count)*sizeof(type))) // macro because it has to get inlined!
 
 // non-inlineable functions
 
-typedef void (* eLogHandler)(const eChar *msg, ePtr param);
-
-#ifndef ePLAYER
-eU64    eGetAllocatedMemory();
-eU64    eGetTotalVirtualMemory();
-void    eSetLogHandler(eLogHandler logHandler, ePtr param);
-#endif
-
-void    eWriteToLog(const eChar *msg);
 void    eLeakDetectorStart();
 void    eLeakDetectorStop();
 eBool   eShowAssertion(const eChar *exp, const eChar *file, eU32 line);
@@ -102,21 +61,6 @@ void    eMemSet(ePtr dst, eU8 val, eU32 count);
 void    eMemCopy(ePtr dst, eConstPtr src, eU32 count);
 void    eMemMove(ePtr dst, eConstPtr src, eU32 count);
 eBool   eMemEqual(eConstPtr mem0, eConstPtr mem1, eU32 count);
-void    eStrClear(eChar *str);
-void    eStrCopy(eChar *dst, const eChar *src);
-void    eStrNCopy(eChar *dst, const eChar *src, eU32 count);
-eChar * eStrClone(const eChar *str);
-eU32    eStrLength(const eChar *str);
-eChar * eStrAppend(eChar *dst, const eChar *src);
-eInt    eStrCompare(const eChar *str0, const eChar *str1);
-eChar * eStrUpper(eChar *str);
-eChar * eIntToStr(eInt val);
-eChar * eFloatToStr(eF32 val);
-eInt    eStrToInt(const eChar *str);
-eF32    eStrToFloat(const eChar *str);
-eBool   eIsAlphaNumeric(eChar c);
-eBool   eIsDigit(eChar c);
-eBool   eIsAlpha(eChar c);
 void    eRandomize(eU32 seed);
 eU32    eRandom();
 eU32    eRandom(eU32 &seed);
@@ -165,22 +109,10 @@ eF32    eRandomF(eF32 min, eF32 max, eU32 &seed);
 eU32    eNextPowerOf2(eU32 x);
 eBool   eIsPowerOf2(eU32 x);
 eBool   eClosedIntervalsOverlap(eInt start0, eInt end0, eInt start1, eInt end1);
-eU16    eLoword(eU32 x);
-eU16    eHiword(eU32 x);
-eU8     eLobyte(eU16 x);
-eU8     eHibyte(eU16 x);
-eU32    eMakeDword(eU16 lo, eU16 hi);
-eU16    eMakeWord(eU8 lo, eU8 hi);
 
 #ifdef PROUT_IMGUI
-eF64	eAToF( const eChar * _str );
-eInt	eMemCompare( const void * _s1, const void * _s2, eInt _n );
-void *	eMemChr( register const void * _src_void, int _c, size_t _length );
-eChar	eToUpper( eChar _c );
-int eStrNCompare(const eChar * _s1, const eChar * _s2, register size_t _n);
-eChar * eStrStr( const eChar * s1, const eChar * s2 );
-eBool	eIsSpace( eChar c );
-
+eInt	eMemCompare(const void * _s1, const void * _s2, eInt _n);
+void *	eMemChr(register const void * _src_void, int _c, size_t _length);
 #endif // PROUT_IMGUI
 
 #define eLoword(x)          (eU16)(x&0xffff)
@@ -190,11 +122,7 @@ eBool	eIsSpace( eChar c );
 #define eMakeDword(lo, hi)  (((eU32)lo)|(((eU32)hi)<<16))
 #define eMakeWord(lo, hi)   (((eU8)lo)|(((eU8)hi)<<8))
 
-#define eVector3ToStr(val)  (eString("") + eFloatToStr(val.x) + eString(",") + eFloatToStr(val.y) + eString(",") + eFloatToStr(val.z))
-#define eVector4ToStr(val)  (eString("") + eFloatToStr(val.x) + eString(",") + eFloatToStr(val.y) + eString(",") + eFloatToStr(val.z) + eString(",") + eFloatToStr(val.w))
-
 // inlineable functions
-
 eFORCEINLINE eF32 eAbs(eF32 x)
 {
     __asm
@@ -283,35 +211,35 @@ template<class T> eU32 eHashPtr(const T * const &ptr)
 
 template<class T> void eSetBit(T &t, eU32 index)
 {
-    eASSERT(index < sizeof(T)*8);
+    //eASSERT(index < sizeof(T)*8);
     t |= (1<<index);
 }
 
 template<class T> void eSetBit(T &t, eU32 index, eBool set)
 {
-    eASSERT(set == 0 || set == 1);
+    //eASSERT(set == 0 || set == 1);
 
-    eASSERT(index <sizeof(T)*8);
+    //eASSERT(index <sizeof(T)*8);
     t |= (set<<index);
 }
-
+/*
 template<class T> void eClearBit(T &t, eU32 index)
 {
     eASSERT(index < sizeof(T)*8);
     t &= ~(1<<index);
 }
-
+*/
 template<class T> eBool eGetBit(T t, eU32 index)
 {
-    eASSERT(index < sizeof(T)*8);
+    //eASSERT(index < sizeof(T)*8);
     return ((t&(1<<index)) != 0);
 }
-
+/*
 template<class T> void eToggleBit(T &t, eU32 index)
 {
     eASSERT(index < sizeof(T)*8);
     t ^= (1<<index);
-}
+}*/
 
 template<class T> void eDelete(T &ptr)
 {
