@@ -80,6 +80,7 @@ public:
     eStr(const eChar *str, eU32 length);
     eStr(const eStr &str);
 
+		eFORCEINLINE void	PreAllocate( eU32 _size ) { m_data.PreAllocate( _size ); }
     eU32            Length() const;
     eBool           Equals(const eStr &str, eU32 count) const;
 

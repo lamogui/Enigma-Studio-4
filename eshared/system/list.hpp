@@ -102,8 +102,12 @@ public:
 
     eFORCEINLINE void Reserve(eU32 capacity)
     {
-        ePtrListReserve((ePtrList *)this, capacity);
+			ePtrListReserve((ePtrList *)this, capacity);
     }
+
+		eFORCEINLINE void PreAllocate(eU32 _capacity) {
+			Reserve( _capacity );
+		}
 
     eFORCEINLINE void Clear()
     {
