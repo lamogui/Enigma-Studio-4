@@ -27,9 +27,9 @@ void eStrCopy(eChar *dst, const eChar *src)
 	while (*dst++ = *src++);
 }
 
-eInt eStrPtrNCopy( eChar * _buffer, int _bufferSize, const eChar * _start, const eChar * _end) {
+eInt eStrPtrNCopy( eChar * _buffer, int _bufferSize, const eChar * _start, const eChar * _end ) {
 	passert(_end > _start, "Invalid start & end pointers");
-	passert( _bufferSize > _end-_start+1, "Not enought buffer size !"  );
+	passert( _bufferSize > _end-_start, "Not enought buffer size !"  );
 	int i = 0;
 	while (_start != _end && i+1<_bufferSize) {
 		_buffer[ i++ ] = *_start;
