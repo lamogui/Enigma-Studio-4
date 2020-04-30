@@ -13,7 +13,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #pragma once
-#include "system/sys_defines.h"
 #if defined( PROUT_WIN32 ) && defined( PROUT_RELEASE )
 void eGlobalsStaticsInit();
 void eGlobalsStaticsFree();

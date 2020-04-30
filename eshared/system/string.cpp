@@ -172,19 +172,6 @@ eChar * eIntToStr(eInt val)
 	return cp;
 }
 
-#if !defined(ePLAYER) || !defined(eRELEASE)
-#include <sstream>
-
-eChar * eFloatToStr(eF32 val)
-{
-	static eChar str[20];
-	std::ostringstream ss;
-	ss << val;
-	eStrCopy(str, ss.str().c_str());
-	return str;
-}
-#endif
-
 eInt eStrToInt( const eChar * _str, const char ** _end )
 {
 	eASSERT(eStrLength(_str) > 0);

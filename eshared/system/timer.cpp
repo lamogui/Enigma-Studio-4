@@ -12,13 +12,14 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef eRELEASE
+#include "sys_builddefines.h"
+
+#if defined( PROUT_SUPPORT_64BIT_INTEGERS ) &&  defined( PROUT_WIN32 )
 
 #include "extern/Enigma/eshared/system/timer.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
 
-#include "sys_builddefines.h"
-#include "system/sys_defines.h"
+
 #include "system/sys_assert.hpp"
 
 #ifdef PROUT_WIN32
@@ -97,4 +98,4 @@ void eTimer::_initialize()
     }
 }
 
-#endif // !eRELEASE
+#endif // !PROUT_SUPPORT_64BIT_INTEGERS

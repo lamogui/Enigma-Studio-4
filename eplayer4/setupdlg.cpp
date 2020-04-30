@@ -20,15 +20,16 @@
 #include "extern/Enigma/eshared/system/runtime.hpp"
 #include "extern/Enigma/eshared/system/rect.hpp"
 #include "extern/Enigma/eshared/system/list.hpp"
-#include "system/sys_defines.h"
+#include "extern/Enigma/eshared/system/string.hpp"
 
 #ifdef PROUT_WIN32
-#include "platforms/win32/sys_file_win32.hpp"
+#include "platforms/win32/sys_win32.h"
 #endif // PROUT_WIN32
 #include "system/sys_monitors.hpp"
 
 static eList< eSize > s_MonitorResolutions;
 
+#ifdef PROUT_WIN32
 enum eSetupDlgWidgetInfos
 {
     eBTN_WIDTH  = 135,
@@ -47,7 +48,10 @@ static HWND createButton(const eChar *text, eBool checkBox, const eRect &r, HWND
 
 static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-    static eList<HWND> resBtns;
+    static eList<HWND> * resBtns = nullptr;
+		if ( resBtns == nullptr ) {
+			resBtns = new eList<HWND>(); // Avoid TLS array problem
+		}
     static HWND windowedBtn, vsyncBtn;
     static eSetup *setup = nullptr;
 
@@ -64,7 +68,7 @@ static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             eStrAppend(buf, eIntToStr(res.height));
 
             HWND btn = createButton(buf, eFALSE, eRect(0, i*eBTN_HEIGHT, eBTN_WIDTH, (i+1)*eBTN_HEIGHT), hwnd);
-            resBtns.Append(btn);
+            resBtns->Append(btn);
         }
 
         const eU32 y = s_MonitorResolutions.Num()*eBTN_HEIGHT;
@@ -78,7 +82,7 @@ static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         {
             for (eU32 i=0; i< s_MonitorResolutions.Num(); i++)
             {
-                if (lparam == (LPARAM)resBtns[i])
+                if (lparam == (LPARAM)(*resBtns)[i])
                 {
                     setup->fullScreen = (SendMessage(windowedBtn, BM_GETCHECK, 0, 0) != BST_CHECKED);
                     setup->vsync = (SendMessage(vsyncBtn, BM_GETCHECK, 0, 0) != BST_CHECKED);
@@ -99,11 +103,13 @@ static LRESULT CALLBACK dlgProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
     return DefWindowProc(hwnd, msg, wparam, lparam);
 }
+#endif // PROUT_WIN32
 
 eBool eShowSetupDialog( eSetup &setup )
 {
 		Sys_GetMonitorResolutions( s_MonitorResolutions );
 
+#ifdef PROUT_WIN32
     WNDCLASSA wc;
     eMemSet(&wc, 0, sizeof(wc));
     wc.style = CS_HREDRAW|CS_VREDRAW;
@@ -138,7 +144,9 @@ eBool eShowSetupDialog( eSetup &setup )
 
     // has user clicked a resolution button or not?
     return (msg.wParam == IDOK ? eTRUE : eFALSE);
-
+#else 
+#error "TODO" 
+#endif // PROUT_WIN32
 }
 
 #endif // PROUT_SHOWSETUP_DIALOG

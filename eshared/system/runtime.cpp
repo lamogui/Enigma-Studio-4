@@ -13,7 +13,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "sys_builddefines.h" // for PROUT_IMGUI
-#include "system/sys_defines.h"
 #ifdef PROUT_WIN32
 #include "platforms/win32/sys_win32.h"
 #endif // PROUT_WIN32
@@ -75,25 +74,6 @@ void eFreeAligned(ePtr ptr)
         eDeleteArray(realPtr);
     }
 }
-
-
-/*
-#ifndef ePLAYER
-eU64 eGetAllocatedMemory()
-{
-    return g_allocedMem;
-}
-
-eU64  eGetTotalVirtualMemory()
-{
-    MEMORYSTATUSEX mse;
-    eMemSet(&mse, 0, sizeof(mse));
-    mse.dwLength = sizeof(mse);
-    GlobalMemoryStatusEx(&mse);
-    return mse.ullTotalVirtual;
-}
-#endif
-*/
 
 void eLeakDetectorStart()
 {
@@ -183,7 +163,7 @@ void eMemSet(ePtr dst, eU8 val, eU32 count)
 
 void eMemCopy(ePtr dst, eConstPtr src, eU32 count)
 {
-#ifdef eUSE_MMX
+#if 1
     __asm
     {
         mov     edi, dword ptr [dst]

@@ -335,7 +335,7 @@ eVector3::eVector3()
     null();
 }
 
-#ifndef eRELEASE
+#ifdef PROUT_ENABLE_TLS
 eVector3::eVector3(eVector3Const vc)
 {
     static const eVector3 vecs[] =
@@ -348,7 +348,7 @@ eVector3::eVector3(eVector3Const vc)
 
     *this = vecs[vc];
 }
-#endif // eRELEASE
+#endif // PROUT_ENABLE_TLS
 
 eVector3::eVector3(const eFXYZ &fxyz)
 {

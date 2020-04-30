@@ -15,7 +15,7 @@
 #pragma once
 
 #include "sys_builddefines.h"
-#ifndef eRELEASE
+#if defined( PROUT_ENABLE_TLS ) && defined( PROUT_WIN32 )
 #include "extern/Enigma/eshared/system/types.hpp"
 
 class eTimer
@@ -45,4 +45,4 @@ private:
     eU32            m_histIndex;
     eU32            m_histCount;
 };
-#endif // !eRELEASE
+#endif // defined( PROUT_ENABLE_TLS ) && defined( PROUT_WIN32 )

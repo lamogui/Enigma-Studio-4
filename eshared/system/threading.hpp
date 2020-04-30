@@ -84,38 +84,3 @@ private:
     eThreadPriority     m_prio;
     eU32                m_tid;
 };
-
-class eMutex
-{
-public:
-    eMutex();
-    ~eMutex();
-
-    void                enter();
-    void                tryEnter();
-    void                leave();
-
-    eBool               isLocked() const;
-
-private:
-    ePtr                m_handle;
-    eBool               m_locked;
-};
-
-class eScopedLock
-{
-public:
-    eScopedLock(eMutex &mutex) :
-        m_mutex(mutex)
-    {
-        m_mutex.enter();
-    }
-
-    ~eScopedLock()
-    {
-        m_mutex.leave();
-    }
-
-private:
-    eMutex & m_mutex;
-};

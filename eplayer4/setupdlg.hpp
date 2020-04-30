@@ -13,19 +13,22 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #pragma once
-#include "sys_builddefines.h"
+#include "sys_buildfeatures.h"
 #include "extern/Enigma/eshared/system/types.hpp"
 #include "extern/Enigma/eshared/system/point.hpp"
 
 #define PROUT_TARGET_RESOLUTION_WIDTH 1920
 #define PROUT_TARGET_RESOLUTION_HEIGHT 1080
 
-#ifndef PROUT_FULLSCREEN_ONLY
 struct eSetup
 {
     eSetup() :
         vsync( true ),
-        fullScreen( false ),
+#ifdef PROUT_FULLSCREEN_ONLY
+        fullScreen( true ),
+#else 
+				fullScreen( false ),
+#endif 
         res(PROUT_TARGET_RESOLUTION_WIDTH, PROUT_TARGET_RESOLUTION_HEIGHT)
     {
     }
@@ -35,6 +38,7 @@ struct eSetup
     eBool   fullScreen;
 };
 
+#ifndef PROUT_FULLSCREEN_ONLY
 #ifdef PROUT_SHOWSETUP_DIALOG
 
 // returns false, if config dialog was canceled,

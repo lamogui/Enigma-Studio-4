@@ -54,7 +54,6 @@ eInt    eStrCompare(const eChar *str0, const eChar *str1);
 eInt    eStrICompare(const eChar *str0, const eChar *str1);
 eChar * eStrUpper(eChar *str);
 eChar * eIntToStr(eInt val);
-eChar * eFloatToStr(eF32 val);
 eInt    eStrToInt(const eChar *_str, const char ** _end = nullptr );
 eU64		eStrToHex( const eChar * _str, const char ** _end = nullptr );
 eF64    eStrToFloat(const eChar *str, const char ** _end = nullptr);

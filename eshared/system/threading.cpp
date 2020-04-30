@@ -14,7 +14,6 @@
 
 #include "extern/Enigma/eshared/system/threading.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp" // for eDelete
-#include "system/sys_defines.h"
 #include "system/sys_assert.hpp"
 
 
@@ -142,45 +141,4 @@ eU32 eThread::_threadTrunk(ePtr arg)
     g_curThreadCtx = &thread->m_ctx;
 #endif
     return (*thread)();
-}
-
-eMutex::eMutex() :
-    m_locked(eFALSE)
-{
-    CRITICAL_SECTION *cs = new CRITICAL_SECTION;
-    InitializeCriticalSection(cs);
-    m_handle = (ePtr)cs;
-}
-
-eMutex::~eMutex()
-{
-    passert(!m_locked, "Mutex locked at destruction !");
-    CRITICAL_SECTION *cs = (CRITICAL_SECTION *)m_handle;
-    DeleteCriticalSection(cs);
-    eDelete(cs);
-}
-
-void eMutex::enter()
-{
-    EnterCriticalSection((CRITICAL_SECTION *)m_handle);
-    passert(!m_locked, "Mutex double lock !" );
-    m_locked = eTRUE;
-}
-
-void eMutex::tryEnter()
-{
-    if (TryEnterCriticalSection((CRITICAL_SECTION *)m_handle))
-        m_locked = eTRUE;
-}
-
-void eMutex::leave()
-{
-    passert(m_locked, "Unlock a not loacked mutex !");
-    m_locked = eFALSE;
-    LeaveCriticalSection((CRITICAL_SECTION *)m_handle);
-}
-
-eBool eMutex::isLocked() const
-{
-    return m_locked;
 }
