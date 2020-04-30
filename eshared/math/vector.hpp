@@ -125,7 +125,7 @@ public:
     friend eVector2 operator / (eF32 s, const eVector2 &v);
 };
 
-#ifndef PROUT_ENABLE_TLS
+#ifdef PROUT_ENABLE_TLS
 enum eVector3Const
 {
     eVEC3_XAXIS,
@@ -139,7 +139,7 @@ class eVector3 : public eFXYZ
 {
 public:
     eVector3();
-#ifndef PROUT_ENABLE_TLS
+#ifdef PROUT_ENABLE_TLS
     eVector3(eVector3Const vc);
 #endif // !PROUT_ENABLE_TLS
     eVector3(const eFXYZ &fxyz);
