@@ -23,7 +23,6 @@
 struct eSetup
 {
     eSetup() :
-        vsync( true ),
 #ifdef PROUT_FULLSCREEN_ONLY
         fullScreen( true ),
 #else 
@@ -34,7 +33,6 @@ struct eSetup
     }
 
     eSize   res;
-    eBool   vsync;
     eBool   fullScreen;
 };
 
