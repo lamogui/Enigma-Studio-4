@@ -19,8 +19,8 @@
 #include "system/sys_assert.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
 #include "extern/Enigma/eshared/system/rect.hpp"
-#include "extern/Enigma/eshared/system/list.hpp"
-#include "extern/Enigma/eshared/system/string.hpp"
+#include "generics/containers/list.hpp"
+#include "generics/text/string.hpp"
 
 #ifdef PROUT_WIN32
 #include "platforms/win32/sys_win32.h"

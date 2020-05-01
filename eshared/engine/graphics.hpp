@@ -18,8 +18,8 @@
 #include "extern/Enigma/eshared/system/types.hpp"
 #include "extern/Enigma/eshared/system/point.hpp"
 #include "extern/Enigma/eshared/system/color.hpp"
-#include "extern/Enigma/eshared/math/vector.hpp"
-#include "extern/Enigma/eshared/math/matrix.hpp"
+#include "generics/math/vec.hpp"
+#include "generics/math/matrix.hpp"
 
 enum eGraphicsConsts
 {

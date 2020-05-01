@@ -19,7 +19,7 @@
 
 #include "extern/Enigma/eshared/engine/graphics.hpp"
 #include "extern/Enigma/eshared/engine/graphicsdx11.hpp"
-#include "extern/Enigma/eshared/system/list.hpp"
+#include "generics/containers/list.hpp"
 #include "system/sys_assert.hpp"
 #include "extern/Enigma/eshared/system/runtime.hpp"
 

@@ -14,7 +14,7 @@
 
 #pragma once
 #include "extern/Enigma/eshared/system/types.hpp"
-#include "extern/Enigma/eshared/system/list.hpp"
+#include "generics/containers/list.hpp"
 
 
 // bit- and byte-wise reading from and

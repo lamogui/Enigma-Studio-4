@@ -21,7 +21,7 @@
 #include "extern/Enigma/eshared/system/types.hpp"
 #include "extern/Enigma/eshared/system/rect.hpp"
 #include "extern/Enigma/eshared/engine/graphics.hpp"
-#include "extern/Enigma/eshared/system/string.hpp"
+#include "generics/text/string.hpp"
 
 struct ID3D11Device;
 struct ID3D11Buffer;
