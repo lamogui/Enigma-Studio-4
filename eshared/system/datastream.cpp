@@ -13,9 +13,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "extern/Enigma/eshared/system/datastream.hpp"
-#include "extern/Enigma/eshared/system/runtime.hpp"
-
+#include "generics/math/math.hpp"
 #include "system/sys_assert.hpp"
+#include "generics/math/bits.hpp"
+#include "system/memory.hpp"
 
 eDataStream::eDataStream(eConstPtr mem, eU32 length) :
     m_reading(eFALSE),

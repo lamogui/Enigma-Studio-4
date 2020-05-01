@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "extern/Enigma/eshared/system/types.hpp"
+#include "system/types.hpp"
 
 class eProfilerThread;
 

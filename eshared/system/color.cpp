@@ -14,7 +14,7 @@
 
 
 #include "extern/Enigma/eshared/system/color.hpp"
-#include "extern/Enigma/eshared/system/runtime.hpp"
+#include "generics/math/math.hpp"
 
 #include "system/sys_assert.hpp"
 

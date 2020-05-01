@@ -18,7 +18,7 @@
 // Let's wait a need for this
 #if 0 // PROUT_FILE_API
 
-#include "extern/Enigma/eshared/system/types.hpp"
+#include "system/types.hpp"
 #include "generics/containers/list.hpp"
 
 enum eFileSeekMode

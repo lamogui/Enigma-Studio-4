@@ -18,7 +18,7 @@
 
 #ifdef PROUT_D3D11
 
-#include "extern/Enigma/eshared/system/types.hpp"
+#include "system/types.hpp"
 #include "extern/Enigma/eshared/system/rect.hpp"
 #include "extern/Enigma/eshared/engine/graphics.hpp"
 #include "generics/text/string.hpp"

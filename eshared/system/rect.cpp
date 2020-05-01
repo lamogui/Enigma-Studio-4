@@ -13,7 +13,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "extern/Enigma/eshared/system/rect.hpp"
-#include "extern/Enigma/eshared/system/runtime.hpp" // for eASSERT & eSwap
+#include "system/memory.hpp" // for eSwap
 #include "system/sys_assert.hpp"
 
 eRect::eRect()
@@ -121,13 +121,13 @@ eBool eRect::intersect(const eRect &r) const
 
 eInt eRect::operator [] (eInt index) const
 {
-    eASSERT(index < 4);
+    passert(index < 4,"Inavlid index");
     return ((eInt *)this)[index];
 }
 
 eInt & eRect::operator [] (eInt index)
 {
-    eASSERT(index < 4);
+    passert(index < 4,"Invalid index");
     return ((eInt *)this)[index];
 }
 

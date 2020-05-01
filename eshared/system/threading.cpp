@@ -13,7 +13,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "extern/Enigma/eshared/system/threading.hpp"
-#include "extern/Enigma/eshared/system/runtime.hpp" // for eDelete
+#include "system/memory.hpp" // for eDelete
 #include "system/sys_assert.hpp"
 
 

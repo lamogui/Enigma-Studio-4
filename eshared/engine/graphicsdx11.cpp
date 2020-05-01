@@ -21,7 +21,7 @@
 #include "extern/Enigma/eshared/engine/graphicsdx11.hpp"
 #include "generics/containers/list.hpp"
 #include "system/sys_assert.hpp"
-#include "extern/Enigma/eshared/system/runtime.hpp"
+#include "system/memory.hpp"
 
 static void eCallDx(const HRESULT res)
 {

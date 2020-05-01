@@ -13,7 +13,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "extern/Enigma/eshared/system/point.hpp"
-#include "extern/Enigma/eshared/system/runtime.hpp"
+#include "generics/math/math.hpp"
 
 #include "system/sys_assert.hpp"
 

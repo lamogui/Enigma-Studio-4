@@ -16,7 +16,7 @@
 
 #include "sys_builddefines.h"
 #if defined( PROUT_ENABLE_TLS ) && defined( PROUT_WIN32 )
-#include "extern/Enigma/eshared/system/types.hpp"
+#include "system/types.hpp"
 
 class eTimer
 {

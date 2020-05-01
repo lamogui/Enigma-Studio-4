@@ -15,7 +15,7 @@
 #pragma once
 #include "sys_builddefines.h"
 #include "renderbase/renderbase_defines.h"
-#include "extern/Enigma/eshared/system/types.hpp"
+#include "system/types.hpp"
 #include "extern/Enigma/eshared/system/point.hpp"
 #include "extern/Enigma/eshared/system/color.hpp"
 #include "generics/math/vec.hpp"
